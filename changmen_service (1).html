@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#fffdfb">
+<title>ช่างเม่น Service</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;height:100%;}
+body{font-family:'Sarabun','Noto Sans Thai',sans-serif;background:#f3ede3;overscroll-behavior:none;}
+input,select,textarea{font-size:16px!important;font-family:'Sarabun','Noto Sans Thai',sans-serif;}
+#root{height:100%;}
+
+:root{--a:#d97b29;--as:#fbe3c8;--ad:#c4671f;--ink:#2b2420;--paper:#fffdfb;--line:#e4ddd2;--muted:#8a8077;--good:#2f7d4f;}
+*{box-sizing:border-box;}
+.app-root{display:flex;flex-direction:column;height:100vh;background:#f3ede3;overflow:hidden;font-family:'Sarabun','Noto Sans Thai',sans-serif;}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:56px;background:var(--paper);border-bottom:1px solid var(--line);z-index:20;flex-shrink:0;}
+.topbar-title{font-weight:800;font-size:17px;color:var(--ink);}
+.topbar-actions{display:flex;gap:8px;align-items:center;}
+.tbtn{display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:10px;border:1px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;}
+.tbtn-primary{background:var(--a);border-color:var(--a);color:#fff;}
+.main-content{flex:1;overflow-y:auto;padding-bottom:80px;}
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:10px 18px;border-radius:99px;font-size:13.5px;font-weight:600;z-index:100;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.25);}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;height:68px;background:var(--paper);border-top:1px solid var(--line);display:flex;z-index:20;}
+.bnav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:none;background:transparent;color:var(--muted);font-family:inherit;font-size:10px;font-weight:600;cursor:pointer;position:relative;padding:0;}
+.bnav-btn.active{color:var(--ad);}
+.bnav-btn.active svg{stroke:var(--ad);}
+.bnav-badge{position:absolute;top:4px;right:calc(50% - 20px);background:var(--a);color:#fff;font-size:9px;font-weight:800;border-radius:99px;padding:1px 5px;min-width:16px;text-align:center;}
+.doc-wrap{padding:12px 12px 0;}
+.doc-topbar{display:flex;gap:8px;margin-bottom:10px;}
+.doc-card{background:var(--paper);border-radius:14px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.06);border:1px solid var(--line);}
+.doc-header{background:var(--as);color:var(--ad);text-align:center;font-weight:800;font-size:15px;padding:14px 12px;}
+.doc-meta{padding:12px 14px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:10px;}
+.doc-meta-row2{display:flex;gap:10px;}
+.field-group{display:flex;flex-direction:column;gap:4px;}
+.field-label{font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
+.field-input{border:1.5px solid var(--line);border-radius:8px;padding:10px 12px;font-family:inherit;font-size:15px;color:var(--ink);background:#fff;width:100%;}
+.field-input:focus{border-color:var(--a);outline:none;}
+select.field-input{appearance:auto;}
+.field-note{font-size:11px;color:var(--muted);margin-top:-4px;}
+.tbl-section-title{padding:10px 14px 6px;font-weight:700;font-size:13px;color:var(--ad);border-top:1px solid var(--line);}
+.tbl-scroll{overflow-x:auto;}
+.tbl{width:100%;border-collapse:collapse;font-size:13px;min-width:420px;}
+.tbl thead th{background:var(--as);color:var(--ad);padding:8px 7px;font-weight:700;font-size:12px;text-align:left;border-bottom:1px solid var(--line);}
+.tbl td{padding:7px 7px;border-bottom:1px solid var(--line);vertical-align:middle;}
+.center{text-align:center;}.right{text-align:right;}.bold{font-weight:700;}
+.cell-input{width:100%;border:none;background:transparent;font-family:inherit;font-size:13px;padding:3px 4px;color:var(--ink);min-width:60px;}
+.cell-input:focus{background:#faf7f2;border-radius:4px;outline:none;}
+.th-input{width:100%;background:transparent;border:1px solid transparent;font-family:inherit;font-size:12px;font-weight:700;color:var(--ad);padding:1px 3px;border-radius:3px;}
+.th-input:focus{border-color:var(--a);background:#fff;color:var(--ink);outline:none;}
+.th-input.center{text-align:center;}.th-input.right{text-align:right;}
+.sub-row td{background:#f7f2ea;font-size:12.5px;padding:6px 7px;}
+.total-row td{background:var(--a);color:#fff;font-weight:800;padding:9px 7px;}
+.add-row-btn{display:flex;align-items:center;gap:6px;background:none;border:none;color:var(--ad);font-weight:700;font-size:13px;cursor:pointer;padding:10px 14px;font-family:inherit;}
+.eq-add-btn{display:flex;align-items:center;gap:7px;background:none;border:1.5px dashed var(--a);color:var(--ad);font-weight:700;font-size:13px;cursor:pointer;padding:10px 14px;margin:10px 14px;border-radius:8px;font-family:inherit;}
+.eq-section{border-top:2px solid var(--as);}
+.eq-header{display:flex;align-items:center;justify-content:space-between;padding:9px 14px;background:var(--as);font-weight:700;font-size:13.5px;color:var(--ad);}
+.icon-btn{border:none;background:#f1ece3;color:var(--muted);width:32px;height:32px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
+.icon-btn.danger:hover{background:#fbdede;color:#b3261e;}
+.notes-section{padding:12px 14px;border-top:1px solid var(--line);}
+.notes-title{font-weight:700;color:var(--ad);margin-bottom:8px;font-size:13.5px;}
+.note-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.pay-header{background:var(--a);color:#fff;text-align:center;font-weight:800;padding:9px;font-size:14px;}
+.pay-body{padding:14px;text-align:center;color:#1d4ed8;font-size:13.5px;line-height:1.8;}
+.pay-strong{font-weight:800;margin-top:4px;}
+.sm-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--ink);font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;}
+.sm-btn-active{background:var(--as);color:var(--ad);border-color:var(--a);}
+.rc-header-blk{background:#1a1a1a;display:flex;align-items:center;justify-content:space-between;padding:16px 18px;}
+.rc-brand{display:flex;align-items:center;gap:10px;}
+.rc-mark{width:40px;height:40px;border-radius:10px;background:var(--a);color:#fff;font-weight:900;font-size:20px;display:flex;align-items:center;justify-content:center;}
+.rc-name{color:#fff;font-weight:800;font-size:16px;}
+.rc-sub{color:#aaa;font-size:11px;margin-top:2px;}
+.rc-title-blk{text-align:right;}
+.rc-th{color:#fff;font-weight:900;font-size:22px;line-height:1;}
+.rc-en{color:var(--a);font-weight:700;font-size:11px;letter-spacing:3px;margin-top:2px;}
+.rc-footer-blk{display:flex;justify-content:space-between;align-items:flex-end;padding:14px 16px;border-top:2px solid var(--line);flex-wrap:wrap;gap:12px;}
+.rc-sign{text-align:center;}
+.rc-thanks{background:var(--as);text-align:center;padding:10px;font-size:13px;font-weight:600;color:var(--ad);}
+.rc-print-only{display:none;font-weight:700;color:var(--ink);}
+.war-fields{padding:12px;margin-bottom:12px;background:var(--paper);border-radius:14px;border:1px solid var(--line);}
+.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.wc-card{background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.1);border:2px solid #1a1a1a;}
+.wc-head{background:#1a1a1a;display:flex;align-items:center;position:relative;overflow:hidden;}
+.wc-brand-blk{padding:16px 18px 16px 20px;border-right:2px solid #333;}
+.wc-thai{color:#fff;font-weight:900;font-size:20px;line-height:1.1;}
+.wc-en{color:var(--a);font-weight:700;font-size:17px;font-style:italic;}
+.wc-title-blk{padding:16px 20px;flex:1;}
+.wc-doc{color:#fff;font-weight:900;font-size:24px;line-height:1;}
+.wc-job{color:#aaa;font-size:12px;margin-top:3px;font-weight:600;}
+.wc-deco{position:absolute;right:0;top:0;bottom:0;width:80px;background:linear-gradient(135deg,transparent 40%,var(--a) 40%,var(--a) 60%,transparent 60%);}
+.wc-body{display:flex;padding:18px;gap:12px;flex-wrap:wrap;}
+.wc-info{flex:1;min-width:180px;display:flex;flex-direction:column;gap:11px;}
+.wc-row{display:flex;gap:8px;align-items:baseline;}
+.wc-lbl{color:#888;font-size:12px;font-weight:600;min-width:80px;}
+.wc-val{color:#1a1a1a;font-size:14px;font-weight:700;}
+.wc-badge-wrap{display:flex;flex-direction:column;align-items:center;gap:8px;}
+.wc-badge{background:#1a1a1a;border-radius:50% 50% 44% 44%/40% 40% 30% 30%;width:120px;height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;border:3px solid #fff;box-shadow:0 0 0 3px #1a1a1a;}
+.wc-stars{color:var(--a);font-size:12px;letter-spacing:3px;margin-bottom:2px;}
+.wc-b-lbl{font-size:10px;font-weight:700;color:#ccc;}
+.wc-b-num{font-size:44px;font-weight:900;color:var(--a);line-height:1;}
+.wc-b-unit{font-size:12px;font-weight:700;color:#ccc;}
+.wc-note{background:#fff;border:2px solid #1a1a1a;border-radius:8px;padding:6px 10px;font-size:12px;text-align:center;color:#1a1a1a;font-weight:700;max-width:130px;}
+.wc-foot{background:#1a1a1a;display:flex;align-items:center;justify-content:space-between;padding:10px 18px;gap:12px;flex-wrap:wrap;}
+.hist-root{padding:12px 12px 0;}
+.hist-search-wrap{position:relative;margin-bottom:10px;}
+.hist-search{width:100%;padding:11px 40px 11px 14px;border:1.5px solid var(--line);border-radius:10px;font-family:inherit;font-size:15px;color:var(--ink);background:#fff;}
+.hist-search:focus{border-color:var(--a);outline:none;}
+.hist-clear{position:absolute;right:10px;top:50%;transform:translateY(-50%);border:none;background:none;color:var(--muted);cursor:pointer;display:flex;align-items:center;padding:6px;}
+.hist-tabs{display:flex;background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:10px;}
+.hist-tab{flex:1;padding:9px 6px;border:none;background:transparent;font-family:inherit;font-size:11.5px;font-weight:700;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;border-right:1px solid var(--line);}
+.hist-tab:last-child{border-right:none;}
+.hist-tab.active{background:var(--as);color:var(--ad);}
+.hist-tab-cnt{background:#e4ddd2;color:var(--muted);border-radius:99px;padding:1px 5px;font-size:10px;font-weight:800;}
+.hist-tab.active .hist-tab-cnt{background:var(--a);color:#fff;}
+.hist-new-row{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;}
+.hist-new-btn{display:inline-flex;align-items:center;gap:5px;padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--ink);font-family:inherit;font-size:12.5px;font-weight:600;cursor:pointer;}
+.hist-list{display:flex;flex-direction:column;gap:8px;}
+.hist-card{background:#fff;border:1px solid var(--line);border-radius:12px;display:flex;align-items:center;overflow:hidden;}
+.hist-card-body{flex:1;padding:12px 14px;cursor:pointer;min-width:0;}
+.hist-card-top{display:flex;align-items:center;gap:6px;margin-bottom:5px;flex-wrap:wrap;}
+.hist-badge{padding:2px 8px;border-radius:99px;font-size:11px;font-weight:700;}
+.hist-doc{font-size:11px;color:var(--muted);}
+.hist-date{font-size:11px;color:var(--muted);margin-left:auto;}
+.hist-name{font-weight:800;font-size:14.5px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.hist-sub{font-weight:700;font-size:13px;}
+.hist-actions{display:flex;flex-direction:column;gap:6px;padding:10px;border-left:1px solid var(--line);background:#faf7f2;}
+.rp-root{padding:12px;}
+.rp-periods{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+.rp-period-btn{padding:8px 14px;border-radius:99px;border:1.5px solid var(--line);background:#fff;color:var(--muted);font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;}
+.rp-period-btn.active{background:var(--a);border-color:var(--a);color:#fff;}
+.rp-kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.rp-kpi-card{background:#fff;border-radius:12px;padding:14px;border:1px solid var(--line);}
+.rp-kpi-label{font-size:12px;color:var(--muted);font-weight:600;margin-bottom:6px;}
+.rp-kpi-val{font-size:22px;font-weight:900;line-height:1.1;}
+.rp-kpi-sub{font-size:11.5px;color:var(--muted);margin-top:3px;}
+.rp-section{background:#fff;border-radius:12px;padding:14px;margin-bottom:12px;border:1px solid var(--line);}
+.rp-section-title{font-weight:800;font-size:14px;color:var(--ink);margin-bottom:14px;}
+.rp-chart{display:flex;align-items:flex-end;gap:6px;height:120px;padding-top:20px;}
+.rp-bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;}
+.rp-bar-val{font-size:10px;color:var(--muted);font-weight:600;height:14px;text-align:center;}
+.rp-bar-wrap{flex:1;width:100%;display:flex;align-items:flex-end;}
+.rp-bar{width:100%;border-radius:4px 4px 0 0;}
+.rp-bar-label{font-size:10px;color:var(--muted);font-weight:600;}
+.rp-cust-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);}
+.rp-cust-row:last-child{border-bottom:none;}
+.rp-cust-rank{width:24px;height:24px;border-radius:99px;background:var(--as);color:var(--ad);font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.rp-cust-info{flex:1;min-width:0;}
+.rp-cust-name{font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rp-cust-sub{font-size:11.5px;color:var(--muted);}
+.rp-cust-amount{font-weight:800;font-size:13.5px;color:var(--good);white-space:nowrap;}
+.rp-pay-grid{display:flex;gap:8px;flex-wrap:wrap;}
+.rp-pay-card{background:var(--as);border-radius:8px;padding:10px 14px;text-align:center;}
+.rp-pay-count{font-size:22px;font-weight:900;color:var(--ad);}
+.rp-pay-method{font-size:12px;font-weight:600;color:var(--muted);}
+.settings-root{padding:12px;display:flex;flex-direction:column;gap:14px;}
+.settings-back{display:flex;align-items:center;gap:12px;}
+.settings-section-title{font-weight:800;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:4px;}
+.settings-form{background:#fff;border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:12px;border:1px solid var(--line);}
+.backup-btn{display:flex;align-items:center;gap:10px;padding:13px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--as);color:var(--ad);font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;width:100%;}
+.settings-hint{font-size:12px;color:var(--muted);line-height:1.6;margin:0;}
+.empty-state{text-align:center;padding:60px 20px;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:8px;}
+.empty-state p{font-weight:700;color:var(--ink);margin:4px 0 0;font-size:15px;}
+.empty-state span{font-size:13px;}
+/* signature pad */
+.sig-section{padding:12px 16px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;}
+.sig-trigger-wrap{display:flex;flex-direction:column;align-items:center;gap:6px;}
+.sig-label-below{font-size:11.5px;color:var(--muted);font-weight:600;}
+.sig-open-btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:9px;border:1.5px dashed var(--a);background:var(--as);color:var(--ad);font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;}
+.sig-open-btn:hover{background:#f7dbb8;}
+.sig-preview-wrap{display:flex;flex-direction:column;align-items:center;gap:6px;}
+.sig-preview-img{height:56px;max-width:160px;object-fit:contain;border:1px solid var(--line);border-radius:6px;background:#fff;padding:4px;}
+.sig-preview-actions{display:flex;gap:6px;}
+.sig-edit-btn{border:1px solid var(--line);background:#fff;color:var(--muted);font-family:inherit;font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;cursor:pointer;}
+.sig-edit-btn:hover{background:#f1ece3;}
+.sig-del-btn:hover{background:#fbdede;color:#b3261e;border-color:#f5c6c6;}
+.sig-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:200;padding:16px;}
+.sig-modal{background:#fff;border-radius:16px;width:100%;max-width:560px;padding:20px;display:flex;flex-direction:column;gap:14px;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+.sig-modal-head{display:flex;align-items:center;justify-content:space-between;}
+.sig-close-btn{border:none;background:#f1ece3;color:var(--muted);width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.sig-hint{font-size:13px;color:var(--muted);margin:0;}
+.sig-canvas{width:100%;border:2px solid var(--line);border-radius:10px;cursor:crosshair;background:#fafafa;touch-action:none;display:block;}
+.sig-modal-foot{display:flex;gap:10px;justify-content:flex-end;}
+.sig-clear-btn{padding:9px 16px;border-radius:8px;border:1.5px solid var(--line);background:#fff;color:var(--muted);font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;}
+.sig-clear-btn:hover{background:#f1ece3;}
+.sig-save-btn{padding:9px 18px;border-radius:8px;border:none;background:var(--a);color:#fff;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;}
+.sig-save-btn:hover{background:var(--ad);}
+.merge-btn{border:1px solid var(--line);background:#fff;color:var(--muted);width:26px;height:22px;border-radius:5px;font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;line-height:1;}
+.merge-btn-on{background:#fff8e0;border-color:#e0b020;color:#b06000;}
+.merge-btn:hover{background:#f7f2ea;}
+@media print{
+  .no-print{display:none!important;}
+  .rc-print-only{display:block!important;}
+  body,html{background:#fff!important;}
+  .app-root{height:auto;overflow:visible;}
+  .main-content{overflow:visible;padding-bottom:0;}
+  .doc-wrap{padding:0;}
+  .doc-card,.wc-card{box-shadow:none;border-radius:0;border:none;max-width:100%;}
+  .field-input,.cell-input,.th-input{border:none!important;background:transparent!important;}
+  .sig-open-btn,.sig-preview-actions{display:none!important;}
+  .sig-preview-img{border:none!important;padding:0!important;}
+  .sig-section{padding:8px 16px;}
+  .tbl-scroll{overflow:visible;}
+  .wc-card{border-radius:8px;border:2px solid #1a1a1a!important;}
+  .war-fields{display:none!important;}
+}
+@media(min-width:640px){
+  .rp-kpi-grid{grid-template-columns:repeat(4,1fr);}
+  .field-grid{grid-template-columns:repeat(3,1fr);}
+  .doc-wrap,.hist-root,.rp-root,.settings-root{max-width:800px;margin:0 auto;padding:16px 16px 0;}
+  .rp-kpi-val{font-size:26px;}
+}
+
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+<script>
+(function(){
+"use strict";
+
+// ── Error display ──────────────────────────────────────────
+window.onerror = function(msg, src, line, col, err) {
+  document.getElementById('root').innerHTML =
+    '<div style="padding:24px;font-family:Sarabun,sans-serif;color:#b3261e;background:#fff;min-height:100vh">' +
+    '<h2>❌ เกิดข้อผิดพลาด</h2><pre style="font-size:13px;white-space:pre-wrap">' +
+    (err ? err.stack : msg) + '</pre></div>';
+  return false;
+};
+
+// ── React hooks ────────────────────────────────────────────
+const {useState, useEffect, useRef, useMemo} = React;
+
+// ── Seed data ──────────────────────────────────────────────
+const SEED_QUOTES=[{"id":"imported-0001","docNo":"QT-0001","customerName":"Sun Kissed Khaoyai Resort","dateText":"12 พฤศจิกายน","items":[{"id":"imported-0100","name":"งานเดินระบบท่ออากาศและดับกลิ่น (ุ6หลัง)A1-A6                  6","qty":1,"price":8700.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["รับประกัน 1 เดือน"],"createdAt":1700086400000,"updatedAt":1700086400000},{"id":"imported-0002","docNo":"QT-0002","customerName":"บ้านเขาใหญ่","dateText":"26 ตุลาคม","items":[{"id":"imported-0200","name":"งานติดตู้กันฝน+ตู้คอนซูเมอร์ 9ช่อง              1             8000                8000          4000           4000","qty":1,"price":12000.0},{"id":"imported-0201","name":"งานเปลี่ยนสายไฟและเปลี่ยนอุปกรณ์ในซุ้มสแลม            5             1500                7500           500           2500","qty":1,"price":10000.0},{"id":"imported-0202","name":"งานเปลี่ยนสายเมนไฟสนามขุดฝัง                  180              150             27000              70         12600","qty":1,"price":39600.0},{"id":"imported-0203","name":"ตรวจเช็คไฟสนามทั้งหมด                    1                                    0          5500           5500","qty":1,"price":5500.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["รับประกัน 3 เดือน หลังติดตั้งบริการเช็คฟรี"],"createdAt":1700172800000,"updatedAt":1700172800000},{"id":"imported-0003","docNo":"QT-0003","customerName":"คุณมาย","dateText":"—","items":[{"id":"imported-0300","name":"งานจัดระบบห้องปั๊ มใหม่ทั้งหมด                            1              45000","qty":1,"price":45000.0},{"id":"imported-0301","name":"งานเพิ่มตู้ควบคุมปั๊ มน้ำทั้งหมด (ตู้กันน้ำขาด)                 1              25000","qty":1,"price":25000.0},{"id":"imported-0302","name":"งานเปลี่ยนท่อแท้งน้ำ ชั้นบน                             1               6500","qty":1,"price":6500.0},{"id":"imported-0303","name":"งานจัดการล้างเครื่องกรองน้ำให้ใหม่                          1               4500","qty":1,"price":4500.0},{"id":"imported-0304","name":"งานเป่ าบ่อซัมเมอร์สและตรวจเช็คสเมอร์ส                         1              17000","qty":1,"price":17000.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["ราคารวมอุปกรณ์ข้อต่อ ตู้คอนโทรล ลูกลอยไฟฟ้า และสายไฟ"],"createdAt":1700259200000,"updatedAt":1700259200000},{"id":"imported-0004","docNo":"QT-0004","customerName":"คุณมาย","dateText":"—","items":[{"id":"imported-0400","name":"ถังบำบัด 1,600 ลิตร 1ถังต่อหลัง บ้านA1-A5และB1-B5","qty":1,"price":0},{"id":"imported-0401","name":"บ่อซึมหรือบ่อวง 80*40 ซม หลังละ 10วง บ้านA1-A5และB1-B5","qty":1,"price":0},{"id":"imported-0402","name":"แก้เรื่องระบบกลิ่น บ้านA1-A5และB1-B5                              10              20,000","qty":1,"price":200000.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["ราคารวมค่าของและค่าแรง ยกเว้นค่าแม็คโคร"],"createdAt":1700345600000,"updatedAt":1700345600000},{"id":"imported-0005","docNo":"QT-0005","customerName":"คุณพี","dateText":"—","items":[{"id":"imported-0500","name":"งานเปลี่ยนอะไหล่ชักโครก+สายชำระ                           1        1200","qty":1,"price":1200.0},{"id":"imported-0501","name":"งานล็อคท่อน้ำดี                                 1         600","qty":1,"price":600.0},{"id":"imported-0502","name":"3200","qty":1,"price":0},{"id":"imported-0503","name":"+ ซ่อมน้ำรั่ว","qty":1,"price":1.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["รับประกันงานติดตั้ง 6 เดือน"],"createdAt":1700432000000,"updatedAt":1700432000000},{"id":"imported-0006","docNo":"QT-0006","customerName":"คุณหน่อย","dateText":"—","items":[{"id":"imported-0600","name":"งานเดินเมนสปอร์ตไลน์สนามเทรนนิส 14 ดวง 100Wสีขาว","qty":1,"price":14.0},{"id":"imported-0601","name":"ติดตั้งตู้คอนซูเมอร์ 1 ชุด 4ช่อง","qty":1,"price":1.0},{"id":"imported-0602","name":"ติดตั้งชุดทามเมอร์ 1 ชุด                              1","qty":1,"price":69300.0},{"id":"imported-0603","name":"ติดตั้งโฟโต้สวิซช์ 1 ชุด","qty":1,"price":1.0},{"id":"imported-0604","name":"ระยะเดินสายไฟหลอดทั้งหมด 198 เมตร                          198","qty":1,"price":350.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["รับประกันงานติดตั้ง 6 เดือน"],"createdAt":1700518400000,"updatedAt":1700518400000},{"id":"imported-0007","docNo":"QT-0007","customerName":"คุณมาย","dateText":"—","items":[{"id":"imported-0700","name":"งานจัดระบบห้องปั๊ มใหม่ทั้งหมด                            1              45000","qty":1,"price":45000.0},{"id":"imported-0701","name":"งานเพิ่มตู้ควบคุมปั๊ มน้ำทั้งหมด (ตู้กันน้ำขาด)                 1              25000","qty":1,"price":25000.0},{"id":"imported-0702","name":"งานเปลี่ยนท่อแท้งน้ำ ชั้นบน                             1               6500","qty":1,"price":6500.0},{"id":"imported-0703","name":"งานจัดการล้างเครื่องกรองน้ำให้ใหม่                          1               4500","qty":1,"price":4500.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["ราคารวมอุปกรณ์ข้อต่อ ตู้คอนโทรล ลูกลอยไฟฟ้า และสายไฟ"],"createdAt":1700604800000,"updatedAt":1700604800000},{"id":"imported-0008","docNo":"QT-0008","customerName":"คุณหน่อย","dateText":"—","items":[{"id":"imported-0800","name":"ติดตั้งตู้สแควร์ดี 3 เฟส ตู้+ลูกเซอร์กิต                    1              15000                15000         4500           4500","qty":1,"price":19500.0},{"id":"imported-0801","name":"ติดตั้งสาย NYY 4*16 20เมตร                               1              14000                14000         2500           2500","qty":1,"price":16500.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["รับประกันงานติดตั้ง 6 เดือน"],"createdAt":1700691200000,"updatedAt":1700691200000},{"id":"imported-0009","docNo":"QT-0009","customerName":"คุณหน่อย","dateText":"30 ตุลาคม","items":[{"id":"imported-0900","name":"งาน (รวม 79,500 บาท)","qty":1,"price":79500.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["รับประกัน1ปีฟรีค่าแรง"],"createdAt":1700777600000,"updatedAt":1700777600000},{"id":"imported-0010","docNo":"QT-0010","customerName":"คุณเอ๋","dateText":"—","items":[{"id":"imported-1000","name":"ปั๊ํมน้ำ Mitsubishi UMCH655S (ปั๊ มเข้าบ้าน)                    1          13,500                13,500            5,500          5,500","qty":1,"price":19000.0},{"id":"imported-1001","name":"ระบบเครื่องกรอง 2 ถัง หัวอัตโนมัติ 2 หัว                   1          35,000                35,000            6,500          6,500","qty":1,"price":41500.0},{"id":"imported-1002","name":"ติดตั้งถัง 1500 ลิตร Dos 1ถัง                         1           8,200                    8,200         1,250          1,250","qty":1,"price":9450.0},{"id":"imported-1003","name":"ตู้ควบคุมกันน้ำขาด                               1           3500                     3,500         1000           1,000","qty":1,"price":4500.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["รับประกันรั่วซึ่ม 1ปี ฟรีค่าแรง"],"createdAt":1700864000000,"updatedAt":1700864000000},{"id":"imported-0011","docNo":"QT-0011","customerName":"คุณหน่อย","dateText":"30 ตุลาคม","items":[{"id":"imported-1100","name":"ติดตั้งแอร์                           2               5500","qty":1,"price":11000.0},{"id":"imported-1101","name":"บ้านB6 ย้ายปลั๊กและสวิทช์                     4               450","qty":1,"price":1800.0},{"id":"imported-1102","name":"B1-B4 เช็คระบบไฟฟ้าและติดตั้งลูกเซอร์กิต                4               2500","qty":1,"price":10000.0},{"id":"imported-1103","name":"ห้องไฟฟ้าหลังสระน้ำติดตั้งตู้คอนซูเมอร์               1               2000           2000        **ไม่รวมค่าอุปกรณ์","qty":1,"price":0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["ราคาเฉพาะค่าแรง รับประกันแอร์ 1ปี ฟรีค่าแรง"],"createdAt":1700950400000,"updatedAt":1700950400000},{"id":"imported-0012","docNo":"QT-0012","customerName":"Pichit","dateText":"15 พฤศจิกายน","items":[{"id":"imported-1200","name":"งานติดตั้งแอร์ 18,000 BTU 3 ตัว เดินท่อน้ำยาไม่เกิน 4 เมตร         3             3500          10500       เกินเมตรละ 650บาท","qty":1,"price":0},{"id":"imported-1201","name":"งานติดตั้งแอร์ 25,000BTU 2 ตัว เดินท่อน้ำยาไม่เกิน 4 เมตร         2             4500           9000       เกินเมตรละ800บาท","qty":1,"price":0},{"id":"imported-1202","name":"งานผ่าฝั่งท่อน้ำยาแอร์ 18,000 BTU                      1             1500","qty":1,"price":1500.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["ราคาเฉพาะค่าแรง รับประกันรั่วซึ่ม 1ปี ฟรีค่าแรง"],"createdAt":1701036800000,"updatedAt":1701036800000},{"id":"imported-0013","docNo":"QT-0013","customerName":"คุณหน่อย","dateText":"30 ตุลาคม","items":[{"id":"imported-1300","name":"งานเดินระบบเมนไฟไปจ่ายแอร์ 2 จุด บ้านA5            2               2000","qty":1,"price":4000.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["ราคาเฉพาะค่าแรง"],"createdAt":1701123200000,"updatedAt":1701123200000},{"id":"imported-0014","docNo":"QT-0014","customerName":"คุณ pooka","dateText":"14 พฤศจิกายน","items":[{"id":"imported-1400","name":"งานเช็คหลอดไฟนีออนในห้องครัว 3 จุด                  3               400","qty":1,"price":1200.0},{"id":"imported-1401","name":"งานเช็คไฟส่องสว่างป้ายหน้าร้าน 2 ป้าย               2               750            1500       **ไม่รวมค่าอุปกรณ์","qty":1,"price":0},{"id":"imported-1402","name":"ติดตั้งไฟราว 2 ชุด                      2               600","qty":1,"price":1200.0},{"id":"imported-1403","name":"ติดตั้งเสาไฟส่องสว่างสวน 3 จุด                  3               3500           10500      **รวมค่าอุปกรณ์","qty":1,"price":0},{"id":"imported-1404","name":"เดินเมนไฟปั๊ มน้ำพุ 1 จุด                  1               2500","qty":1,"price":2500.0},{"id":"imported-1405","name":"ติดตั้งตู้ไฟเพิ่ม 1 จุด                  1               4500","qty":1,"price":4500.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["ราคาเฉพาะค่าแรงและอุปกรณ์บางรายการ"],"createdAt":1701209600000,"updatedAt":1701209600000},{"id":"imported-0015","docNo":"QT-0015","customerName":"คุณหน่อย","dateText":"6 พฤศจิกายน","items":[{"id":"imported-1500","name":"1               6000","qty":1,"price":6000.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["ราคาเฉพาะค่าแรง"],"createdAt":1701296000000,"updatedAt":1701296000000},{"id":"imported-0016","docNo":"QT-0016","customerName":"พี่หมุ","dateText":"25 พฤศจิกายน","items":[{"id":"imported-1600","name":"ติดตั้งปลํ๊ก                 6               800","qty":1,"price":4800.0},{"id":"imported-1601","name":"ติดตั้งสวิตช์                 4               1000","qty":1,"price":4000.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["รับประกันงานติดตั้ง 6 เดือน"],"createdAt":1701382400000,"updatedAt":1701382400000},{"id":"imported-0017","docNo":"QT-0017","customerName":"คุณหน่อย","dateText":"8 พฤศจิกายน","items":[{"id":"imported-1700","name":"งานเดินเมนสายไฟไปจ่ายแอร์ 4ตัว               4               1000","qty":1,"price":4000.0},{"id":"imported-1701","name":"งานเดินเมนสายไฟเข้าเตาไฟฟ้า                 1               2800","qty":1,"price":2800.0},{"id":"imported-1702","name":"งานผ่าฝังปลั๊ก+สวิตช์                   1               1800","qty":1,"price":1800.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["ราคาเฉพาะค่าแรง"],"createdAt":1701468800000,"updatedAt":1701468800000},{"id":"imported-0018","docNo":"QT-0018","customerName":"คุณหน่อย","dateText":"8 พฤศจิกายน","items":[{"id":"imported-1800","name":"งานตรวจเช็คระบบบ้าน D                    1               2500","qty":1,"price":2500.0},{"id":"imported-1801","name":"ติดพัดลมที่ ทอสคาน่า                   1               1500","qty":1,"price":1500.0},{"id":"imported-1802","name":"สลับสวิตช์และตรวจเช็คสวิตช์               1               2000","qty":1,"price":2000.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["ราคาเฉพาะค่าแรง"],"createdAt":1701555200000,"updatedAt":1701555200000},{"id":"imported-0019","docNo":"QT-0019","customerName":"คุณหน่อย","dateText":"23 พฤศจิกายน","items":[{"id":"imported-1900","name":"1               5800","qty":1,"price":5800.0},{"id":"imported-1901","name":"เดินสายล่อฟ้า                      1               9500","qty":1,"price":9500.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["ราคาเฉพาะค่าแรง"],"createdAt":1701641600000,"updatedAt":1701641600000},{"id":"imported-0020","docNo":"QT-0020","customerName":"พี่อั๋น","dateText":"23 พฤศจิกายน","items":[{"id":"imported-2000","name":"เดินปลั๊กไฟ                          16               1000","qty":1,"price":16000.0},{"id":"imported-2001","name":"เดินสวิตช์                            7               700","qty":1,"price":4900.0},{"id":"imported-2002","name":"เดินเมนไปจ่ายไฟป้ายหน้าร้าน                    1               2500","qty":1,"price":2500.0},{"id":"imported-2003","name":"เดินเมนจากตู้คอนซูเมอร์ไปจ่ายปลั๊ก+สวิตช์            1               3800           3800       **ไม่รวมค่าอุปกรณ์หลอดไฟ","qty":1,"price":0},{"id":"imported-2004","name":"เดินไฟไปจ่ายหลอดไฟต่างๆ                       1               2800","qty":1,"price":2800.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["รับประกันงานติดตั้ง 6 เดือน"],"createdAt":1701728000000,"updatedAt":1701728000000},{"id":"imported-0021","docNo":"QT-0021","customerName":"พี่อั๋น","dateText":"23 พฤศจิกายน","items":[{"id":"imported-2100","name":"ติดตั้งเค้าเตอร์รวมทาสี                    1           18000","qty":1,"price":18000.0},{"id":"imported-2101","name":"งานติดตั้งป้ายหน้าร้าน+ทาสีและเทปูน               1           12000","qty":1,"price":12000.0},{"id":"imported-2102","name":"งานติดตั้งบ่อดักไขมัน                      1               7500        7500            รวมค่าอุปกรณ์","qty":1,"price":0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["รับประกันงานติดตั้ง 6 เดือน"],"createdAt":1701814400000,"updatedAt":1701814400000},{"id":"imported-0022","docNo":"QT-0022","customerName":"เกษรม โพธิ์สันเทียะ","dateText":"12 มิถุนายน 2567","items":[{"id":"imported-2200","name":"ติดตั้งปั๊ มรวมถัง        1              4500","qty":1,"price":4500.0},{"id":"imported-2201","name":"ติดตั้ั้งลูกลอยไฟฟ้า        1              1000","qty":1,"price":1000.0},{"id":"imported-2202","name":"ติดตั้งตู้คอนโทรล          1              1500","qty":1,"price":1500.0},{"id":"imported-2203","name":"เดินสายเมน              1              1200            1200         **ไม่รวมค่าอุปกรณ์","qty":1,"price":0},{"id":"imported-2204","name":"เก็บสายซับเมอร์ส           1               500","qty":1,"price":500.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["รับประกันงานติดตั้ง 6 เดือน"],"createdAt":1701900800000,"updatedAt":1701900800000},{"id":"imported-0023","docNo":"QT-0023","customerName":"ช่างบุ้ง วันชัย สืบเทพ","dateText":"10 กรกฎาคม 2567","items":[{"id":"imported-2300","name":"เดินท่อเมนโสโครก                           2                2300            4600","qty":1,"price":4600.0},{"id":"imported-2301","name":"เดินท่อฟอเดนค่าแรง                          4                    500         2000","qty":1,"price":2000.0},{"id":"imported-2302","name":"เดินท่ออ่างล้างหน้า                        2                    300            600","qty":1,"price":600.0},{"id":"imported-2303","name":"เดินท่อน้ำร้อน+น้ำดี                       4                1000            4000","qty":1,"price":4000.0},{"id":"imported-2304","name":"เดินท่อก็อกน้ำเตี้ยที่พื้น 1/2\"                 2                    250            500","qty":1,"price":500.0},{"id":"imported-2305","name":"เดินท่อเมนน้ำดี 1นิ้ว                      1                1500            1500","qty":1,"price":1500.0},{"id":"imported-2306","name":"วางถังดักไขมัน                           1                1300            1300            1300           **รวมถังดักไขมัน","qty":1,"price":0},{"id":"imported-2307","name":"ชุดวางถังบำบัด                           1                6800            6800            6800           **พร้อมบ่อซึม8ท่อน","qty":1,"price":0},{"id":"imported-2308","name":"เดินท่อน้ำร้อนล้างจาน+น้ำดี+ น้ำทิ้ง                1                2500            2500","qty":1,"price":2500.0},{"id":"imported-2309","name":"คอลิ้งฟอเดน (ห้องน้ำชั้น1)                     1                    800            800","qty":1,"price":800.0},{"id":"imported-2310","name":"คอลิ้งอ่างล้างจาน                         1                    800            800","qty":1,"price":800.0},{"id":"imported-2311","name":"บ่อพักน้ำทิ้ง                          1                    700            700","qty":1,"price":700.0},{"id":"imported-2312","name":"หินก่อสร้าง                           3                    700         2100            2100           **ค่าหินพร้อมค่าแรง","qty":1,"price":0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["รับประกันงานติดตั้ง 6 เดือน"],"createdAt":1701987200000,"updatedAt":1701987200000},{"id":"imported-0024","docNo":"QT-0024","customerName":"เกษรม โพธิ์สันเทียะ","dateText":"12 มิถุนายน 2567                               ลำดับ                                  รายการอุปกรณ์   จำนวน    หน่วย","items":[{"id":"imported-2400","name":"ติดตั้งปั๊ มรวมถัง              1             4500           4500                                         3 ตรงเกลียวนอก PVC 1 นิ้ว                      8        ตัว","qty":1,"price":0},{"id":"imported-2401","name":"ติดตั้งลูกลอยไฟฟ้า                1             1000           1000                                         4 ข้อต่อลด PVC 1นิ้วลดนิ้ว2                    10       ตัว","qty":1,"price":0},{"id":"imported-2402","name":"ติดตั้งตู้คอนโทรล                1             1500           1500                                         5 ข้องอ ขนาด90องศา หนา 1นิ้ว                   25       ตัว","qty":1,"price":0},{"id":"imported-2403","name":"เดินสายเมน                    1             1200           1200         **ไม่รวมค่าอุปกรณ์              6 ข้องอ ขนาด45องศา หนา 1นิ้ว                   10       ตัว","qty":1,"price":0},{"id":"imported-2404","name":"เก็บสายซับเมอร์ส                 1             500                500                                      7 ข้อต่อลด PVC นิ้ว2ลด4หุน                     2        ตัว","qty":1,"price":0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["รับประกันงานติดตั้ง 6 เดือน"],"createdAt":1702073600000,"updatedAt":1702073600000},{"id":"imported-0025","docNo":"QT-0025","customerName":"คุณเป๊ กโก้","dateText":"11 กุมภาพันธ์ 2569","items":[{"id":"imported-2500","name":"ไฟหัวเสาหน้าบ้าน (ไม่รวมโครมไฟ)                              2           2,250","qty":1,"price":4500.0},{"id":"imported-2501","name":"ไฟหัวเสาหลังบ้าน (ไม่รวมโครมไฟ)                              2           2,250","qty":1,"price":4500.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["ราคารวมค่าอุปกรณ์และค่าแรง หากนอกเหนือจากใบเสนอราคา คิดเรทเพิ่มเติมตามหน้างาน","รับประกัน 1ปี"],"createdAt":1702160000000,"updatedAt":1702160000000},{"id":"imported-0026","docNo":"QT-0026","customerName":"คุณเป๊ กโก้","dateText":"11 กุมภาพันธ์ 2569","items":[{"id":"imported-2600","name":"ย้ายคอยล์ร้อนหลังบ้าน                                    1           3,500","qty":1,"price":3500.0},{"id":"imported-2601","name":"ติดตั้งแอร์ 12000 BTU ห้องกระจกหน้าบ้าน (TCL)                        1          12,500","qty":1,"price":12500.0},{"id":"imported-2602","name":"ติดตั้งแอร์ 18000 BTU ห้องนอนด้านบน (TCL)                           1          16,500","qty":1,"price":16500.0},{"id":"imported-2603","name":"ติดตั้งแอร์ 25000 BTU ห้องโถงด้านล่าง (TCL)                         1          23,500","qty":1,"price":23500.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["ราคารวมค่าอุปกรณ์และค่าแรง หากนอกเหนือจากใบเสนอราคา คิดเรทเพิ่มเติมตามหน้างาน","รับประกันรั่วซึม 1ปี"],"createdAt":1702246400000,"updatedAt":1702246400000},{"id":"imported-0027","docNo":"QT-0027","customerName":"ศิริพร เชียงนา","dateText":"7 สิงหาคม 2567","items":[{"id":"imported-2700","name":"เดินหัวสปริงเกอร์            65            500","qty":1,"price":32500.0},{"id":"imported-2701","name":"เดินท่อเมน 2นิ้ว            5             2000","qty":1,"price":10000.0},{"id":"imported-2702","name":"เดินท่อเมน 3นิ้ว 200เมตร          1             6000","qty":1,"price":6000.0},{"id":"imported-2703","name":"เดินชุดติดตั้งวาล์ว           5             400            2000         **ไม่รวมค่าอุปกรณ์","qty":1,"price":0},{"id":"imported-2704","name":"ติดตั้งปั๊ มและอุปกรณ์         1             7000","qty":1,"price":7000.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["รับประกันงานติดตั้ง 6 เดือน"],"createdAt":1702332800000,"updatedAt":1702332800000},{"id":"imported-0028","docNo":"QT-0028","customerName":"Thon","dateText":"30/11/67","items":[{"id":"imported-2800","name":"เหมาระบบไฟห้องครัวใหม่               1                                               10000          10000","qty":1,"price":10000.0},{"id":"imported-2801","name":"ตู้คอนซูเมอร์                 1              3000                3000          2500           2500","qty":1,"price":5500.0},{"id":"imported-2802","name":"ติดโคมไฟ LED ติดผนัง                 4              2200                8800           560           2240","qty":1,"price":11040.0},{"id":"imported-2803","name":"ไฟดาวน์ไลท์                   12               450               5400           250           3000","qty":1,"price":8400.0},{"id":"imported-2804","name":"อุปกรณ์ติดตั้ง สวิตซ์ไฟ             7                100                700           350           2450","qty":1,"price":3150.0},{"id":"imported-2805","name":"อุปกรณ์ติดตั้ง ปลั๊กกาวคู่           10               200               2000           370           3700","qty":1,"price":5700.0},{"id":"imported-2806","name":"เดินสายไฟหน้าสระน้ำ                1              1700                1700           800               800","qty":1,"price":2500.0},{"id":"imported-2807","name":"สปอตไลน์โซล่าเซล                   1                                                 700               700","qty":1,"price":700.0},{"id":"imported-2808","name":"งานสายเมนเข้าห้องครัว                1              3500                3500          1700           1700","qty":1,"price":5200.0},{"id":"imported-2809","name":"เดินเมนเครื่องดูดควัน              1              2250                2250          1000           1000","qty":1,"price":3250.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["รับประกันงานติดตั้ง 6 เดือน"],"createdAt":1702419200000,"updatedAt":1702419200000},{"id":"imported-0029","docNo":"QT-0029","customerName":"พีวุ่น","dateText":"—","items":[{"id":"imported-2900","name":"เดินปลั๊ก                   6             1000                     6000          400           2400","qty":1,"price":8400.0},{"id":"imported-2901","name":"เดินสวิซต์                   5               500                    2500          200           1000","qty":1,"price":3500.0},{"id":"imported-2902","name":"เดินเมนไฟ 10เมตร                 1             1300                     1300          800               800","qty":1,"price":2100.0},{"id":"imported-2903","name":"ติดตั้งตู้คอนซูเมอร์             1             3100                     3100         1500           1500","qty":1,"price":4600.0},{"id":"imported-2904","name":"เดินเมนแอร์                   1             1000                     1000          400               400","qty":1,"price":1400.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["รับประกันงานติดตั้ง 6 เดือน"],"createdAt":1702505600000,"updatedAt":1702505600000},{"id":"imported-0030","docNo":"QT-0030","customerName":"คุณเป๊ กโก้","dateText":"11 กุมภาพันธ์ 2569","items":[{"id":"imported-3000","name":"ย้ายคอยล์ร้อนหลังบ้าน                                         1           3,500","qty":1,"price":3500.0},{"id":"imported-3001","name":"ติดตั้งแอร์ 18000 BTU ห้องนอนด้านบน (TCL)                                1          16,500","qty":1,"price":16500.0},{"id":"imported-3002","name":"ติดตั้งแอร์ 25000 BTU ห้องโถงด้านล่าง (TCL)                              1          23,500","qty":1,"price":23500.0},{"id":"imported-3003","name":"ไฟหัวเสาหน้าบ้าน (ไม่รวมโครมไฟ)                                     2           2,250","qty":1,"price":4500.0},{"id":"imported-3004","name":"ไฟหัวเสาหลังบ้าน (ไม่รวมโครมไฟ)                                     2           2,250","qty":1,"price":4500.0},{"id":"imported-3005","name":"ล้างถังน้ำดิบ 1 จุด+เปลี่ยนลูกลอย                                  1           6,500","qty":1,"price":6500.0},{"id":"imported-3006","name":"เปลี่ยนสต๊อปวาล์ว 12ตัว                                       12          12,000","qty":1,"price":12000.0},{"id":"imported-3007","name":"เครื่องกรอง 1ชุด (ระบบเครื่องกรอง 2 ถัง หัวอัตโนมัติ 2 หัว)                     1          46,000","qty":1,"price":46000.0},{"id":"imported-3008","name":"ปั๊ มน้ำ กรุนด์ฟอส 1160 วัตต์ 1ตัว                                 1          32,000","qty":1,"price":32000.0},{"id":"imported-3009","name":"ปั๊๊ มเครื่องกรอง 200 วัตต์ 1ตัว                                 1          10,000","qty":1,"price":10000.0},{"id":"imported-3010","name":"ถังน้ำดี 1 ถัง                                          1          25,000","qty":1,"price":25000.0},{"id":"imported-3011","name":"เปลี่ยนอะไหล่ชักโครก 2ชุด                                       2           1,500","qty":1,"price":3000.0},{"id":"imported-3012","name":"เปลี่ยนก็อกอ่างล่างหน้า 1ตัว                                     1           4,500","qty":1,"price":4500.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["ราคารวมค่าอุปกรณ์และค่าแรง หากนอกเหนือจากใบเสนอราคา คิดเรทเพิ่มเติมตามหน้างาน","รับประกัน 1ปี"],"createdAt":1702592000000,"updatedAt":1702592000000},{"id":"imported-0031","docNo":"QT-0031","customerName":"คุณเป๊ กโก้","dateText":"11 กุมภาพันธ์ 2569","items":[{"id":"imported-3100","name":"ย้ายคอยล์ร้อนหลังบ้าน                                         1           3,500","qty":1,"price":3500.0},{"id":"imported-3101","name":"ติดตั้งแอร์ 12000 BTU ห้องกระจกหน้าบ้าน (DAIKIN)                              1          19,500","qty":1,"price":19500.0},{"id":"imported-3102","name":"ติดตั้งแอร์ 18000 BTU ห้องนอนด้านบน (DAIKIN)                              1          25,500","qty":1,"price":25500.0},{"id":"imported-3103","name":"ติดตั้งแอร์ 25000 BTU ห้องโถงด้านล่าง (DAIKIN) (โมเดล24000BTU)                          1          38,000","qty":1,"price":38000.0},{"id":"imported-3104","name":"ไฟหัวเสาหน้าบ้าน (ไม่รวมโครมไฟ)                                     2           2,250","qty":1,"price":4500.0},{"id":"imported-3105","name":"ไฟหัวเสาหลังบ้าน (ไม่รวมโครมไฟ)                                     2           2,250","qty":1,"price":4500.0},{"id":"imported-3106","name":"ล้างถังน้ำดิบ 1 จุด+เปลี่ยนลูกลอย                                  1           6,500","qty":1,"price":6500.0},{"id":"imported-3107","name":"เปลี่ยนสต๊อปวาล์ว 12ตัว                                       12          12,000","qty":1,"price":12000.0},{"id":"imported-3108","name":"เครื่องกรอง 1ชุด (ระบบเครื่องกรอง 2 ถัง หัวอัตโนมัติ 2 หัว)                     1          46,000","qty":1,"price":46000.0},{"id":"imported-3109","name":"ปั๊ มน้ำ กรุนด์ฟอส 1160 วัตต์ 1ตัว                                 1          32,000","qty":1,"price":32000.0},{"id":"imported-3110","name":"ปั๊๊ มเครื่องกรอง 200 วัตต์ 1ตัว                                 1          10,000","qty":1,"price":10000.0},{"id":"imported-3111","name":"ถังน้ำดี 1 ถัง                                          1          25,000","qty":1,"price":25000.0},{"id":"imported-3112","name":"เปลี่ยนอะไหล่ชักโครก 2ชุด                                       2           1,500","qty":1,"price":3000.0},{"id":"imported-3113","name":"เปลี่ยนก็อกอ่างล่างหน้า 1ตัว                                     1           4,500","qty":1,"price":4500.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["ราคารวมค่าอุปกรณ์และค่าแรง หากนอกเหนือจากใบเสนอราคา คิดเรทเพิ่มเติมตามหน้างาน","รับประกันรั่วซึม 1ปี"],"createdAt":1702678400000,"updatedAt":1702678400000},{"id":"imported-0032","docNo":"QT-0032","customerName":"คุณเป๊ กโก้","dateText":"11 กุมภาพันธ์ 2569","items":[{"id":"imported-3200","name":"ย้ายคอยล์ร้อนหลังบ้าน                                         1           3,500             3,500               เสร็จ","qty":1,"price":0},{"id":"imported-3201","name":"ติดตั้งแอร์ 12000 BTU ห้องกระจกหน้าบ้าน (DAIKIN)                              1          19,500             19,500              เหลือติดคอยเย็น","qty":1,"price":0},{"id":"imported-3202","name":"ติดตั้งแอร์ 18000 BTU ห้องนอนด้านบน (DAIKIN)                              1          25,500             25,500              เสร็จ","qty":1,"price":0},{"id":"imported-3203","name":"ติดตั้งแอร์ 25000 BTU ห้องโถงด้านล่าง (DAIKIN) (โมเดล24000BTU)                          1          38,000             38,000              เสร็จ","qty":1,"price":0},{"id":"imported-3204","name":"ไฟหัวเสาหน้าบ้าน (ไม่รวมโครมไฟ)                                     2           2,250             4,500               เสร็จ","qty":1,"price":0},{"id":"imported-3205","name":"ไฟหัวเสาหลังบ้าน (ไม่รวมโครมไฟ)                                     2           2,250             4,500               เสร็จเหลือใส่โครม","qty":1,"price":0},{"id":"imported-3206","name":"ล้างถังน้ำดิบ 1 จุด+เปลี่ยนลูกลอย                                  1           6,500             6,500               เสร็จ","qty":1,"price":0},{"id":"imported-3207","name":"เปลี่ยนสต๊อปวาล์ว 12ตัว                                       12          12,000             12,000              ยัง","qty":1,"price":0},{"id":"imported-3208","name":"เครื่องกรอง 1ชุด (ระบบเครื่องกรอง 2 ถัง หัวอัตโนมัติ 2 หัว)                     1          46,000             46,000              เครื่องกรองเปลี่ยนท่อ","qty":1,"price":0},{"id":"imported-3209","name":"ปั๊ มน้ำ กรุนด์ฟอส 1160 วัตต์ 1ตัว                                 1          32,000             32,000              เสร็จ","qty":1,"price":0},{"id":"imported-3210","name":"ปั๊๊ มเครื่องกรอง 200 วัตต์ 1ตัว                                 1          10,000             10,000              เสร็็จ","qty":1,"price":0},{"id":"imported-3211","name":"ถังน้ำดี 1 ถัง                                          1          25,000             25,000              ต้องเปลี่ยน","qty":1,"price":0},{"id":"imported-3212","name":"เปลี่ยนอะไหล่ชักโครก 2ชุด                                       2           1,500             3,000               ยัง","qty":1,"price":0},{"id":"imported-3213","name":"เปลี่ยนก็อกอ่างล่างหน้า 1ตัว                                     1           4,500             4,500               ยัง","qty":1,"price":0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["ราคารวมค่าอุปกรณ์และค่าแรง หากนอกเหนือจากใบเสนอราคา คิดเรทเพิ่มเติมตามหน้างาน","รับประกันรั่วซึม 1ปี"],"createdAt":1702764800000,"updatedAt":1702764800000},{"id":"imported-0033","docNo":"QT-0033","customerName":"คุณเป๊ กโก้","dateText":"11 กุมภาพันธ์ 2569","items":[{"id":"imported-3300","name":"ย้ายคอยล์ร้อนหลังบ้าน                                    1           3,500","qty":1,"price":3500.0},{"id":"imported-3301","name":"ติดตั้งแอร์ 12000 BTU ห้องกระจกหน้าบ้าน (DAIKIN)                         1          19,500","qty":1,"price":19500.0},{"id":"imported-3302","name":"ติดตั้งแอร์ 18000 BTU ห้องนอนด้านบน (DAIKIN)                         1          25,500","qty":1,"price":25500.0},{"id":"imported-3303","name":"ติดตั้งแอร์ 25000 BTU ห้องโถงด้านล่าง (DAIKIN) (โมเดล24000BTU)                     1          38,000","qty":1,"price":38000.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["ราคารวมค่าอุปกรณ์และค่าแรง หากนอกเหนือจากใบเสนอราคา คิดเรทเพิ่มเติมตามหน้างาน","รับประกันรั่วซึม 1ปี"],"createdAt":1702851200000,"updatedAt":1702851200000},{"id":"imported-0034","docNo":"QT-0034","customerName":"คุณเป๊ กโก้","dateText":"11 กุมภาพันธ์ 2569","items":[{"id":"imported-3400","name":"ล้างถังน้ำดิบ 1 จุด+เปลี่ยนลูกลอย                                   1           6,500","qty":1,"price":6500.0},{"id":"imported-3401","name":"เปลี่ยนสต๊อปวาล์ว 12ตัว                                       12          12,000","qty":1,"price":12000.0},{"id":"imported-3402","name":"เครื่องกรอง 1ชุด (ระบบเครื่องกรอง 2 ถัง หัวอัตโนมัติ 2 หัว)                     1          46,000","qty":1,"price":46000.0},{"id":"imported-3403","name":"ปั๊ มน้ำ กรุนด์ฟอส 1160 วัตต์ 1ตัว                                 1          32,000","qty":1,"price":32000.0},{"id":"imported-3404","name":"ปั๊๊ มเครื่องกรอง 200 วัตต์ 1ตัว                                  1          10,000","qty":1,"price":10000.0},{"id":"imported-3405","name":"ถังน้ำดี 1 ถัง                                           1          25,000","qty":1,"price":25000.0},{"id":"imported-3406","name":"เปลี่ยนอะไหล่ชักโครก 2ชุด                                        2           1,500","qty":1,"price":3000.0},{"id":"imported-3407","name":"เปลี่ยนก็อกอ่างล่างหน้า 1ตัว                                     1           4,500","qty":1,"price":4500.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["ราคารวมค่าอุปกรณ์และค่าแรง หากนอกเหนือจากใบเสนอราคา คิดเรทเพิ่มเติมตามหน้างาน","รับประกัน 1ปี"],"createdAt":1702937600000,"updatedAt":1702937600000},{"id":"imported-0035","docNo":"QT-0035","customerName":"คุณเป๊ กโก้ (งานเพิ่มเติม)","dateText":"19 พฤษภาคม 2569","items":[{"id":"imported-3500","name":"งานเดินเมนสายไฟแอร์ห้องทำงาน(ชุดละ 15เมตร)                               1          6,000           6,000              เสร็จ","qty":1,"price":0},{"id":"imported-3501","name":"งานเดินเมนสายไฟแอร์ชั้นล่างห้องโถง(ชุดละ 15เมตร)                           1          6,000           6,000              เสร็็จ","qty":1,"price":0},{"id":"imported-3502","name":"งานเดินท่อประปาก็อกหลังบ้าน                                   1          5,500           5,500              เสร็จ เหลือใส่ก็อก","qty":1,"price":0},{"id":"imported-3503","name":"งานเดินประปาก็อกหน้าบ้าน                                    1          1,500           1,500              เสร็จ เหลือใส่ก็อก","qty":1,"price":0},{"id":"imported-3504","name":"ติดตั้งแอร์ 18000 BTU ห้องนอนด้านบน (DAIKIN)                             1         25,500          25,500              ยัง","qty":1,"price":0},{"id":"imported-3505","name":"งานเดินระบบท่อPPRห้องปั๊ ม                                   1         18,000          18,000              เสร็จ","qty":1,"price":0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["ราคารวมค่าอุปกรณ์และค่าแรง หากนอกเหนือจากใบเสนอราคา คิดเรทเพิ่มเติมตามหน้างาน","รับประกัน 1ปี"],"createdAt":1703024000000,"updatedAt":1703024000000},{"id":"imported-0036","docNo":"QT-0036","customerName":"คุณเป๊ กโก้","dateText":"20 เมษษยน 2569","items":[{"id":"imported-3600","name":"งานเปลี่ยนตู้คอนซูเมอร์ของชไนเดอร์ 18 ช่อง พร้อมหัวเมน 100A                1         27,000","qty":1,"price":27000.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["ราคารวมค่าอุปกรณ์และค่าแรง หากนอกเหนือจากใบเสนอราคา คิดเรทเพิ่มเติมตามหน้างาน","รับประกัน 1ปี"],"createdAt":1703110400000,"updatedAt":1703110400000},{"id":"imported-0037","docNo":"QT-0037","customerName":"คุณปั๊ บ","dateText":"24 กพ 69","items":[{"id":"imported-3700","name":"เดินระบบท่อน้ำดีน้ำร้อนและน้ำทิ้งห้องน้ำ(ชั้นล่าง) 4 ห้อง                4            9500                   38000 เบิก20000","qty":1,"price":0},{"id":"imported-3701","name":"เดินท่อน้ำทิ้งอ่างล้างจาน+ท่อน้ำดี+บ่อดักไขมัน(ชั้นล่าง)                 1            4500","qty":1,"price":4500.0},{"id":"imported-3702","name":"พร้อมวางบ่อซึม เรียง2ลง4 รวม 8วง                                1            7500","qty":1,"price":7500.0},{"id":"imported-3703","name":"พร้อมวางบ่อซึม เรียง4ลง4 รวม 16วง                                1          10000","qty":1,"price":10000.0},{"id":"imported-3704","name":"เดินระบบท่อน้ำดีน้ำร้อนและน้ำทิ้งห้องน้ำ(ชั้นบน) 2ห้อง                  2            9500","qty":1,"price":19000.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["รับประกันงานติดตั้ง 6 เดือน"],"createdAt":1703196800000,"updatedAt":1703196800000},{"id":"imported-0038","docNo":"QT-0038","customerName":"คุณปั๊ บ","dateText":"5 มีค 69","items":[{"id":"imported-3800","name":"+แก้ไขท่อน้ำทิ้งอ่างล้างหน้า+น้ำดี                            1            3500","qty":1,"price":3500.0},{"id":"imported-3801","name":"ห้องน้ำใต้บันไดแก้ไขท่อชักโครกไม่ตรงตำแหน่ง                        1            2500","qty":1,"price":2500.0},{"id":"imported-3802","name":"ห้องน้ำห้องนอนด้านล่างแก้ไขท่อชักโครกไม่ตรงตำแหน่ง                       1            2500","qty":1,"price":2500.0},{"id":"imported-3803","name":"ห้องน้ำห้องนอนด้านบนแก้ไขท่อชักโครกไม่ตรงตำแหน่ง                         1            2500","qty":1,"price":2500.0},{"id":"imported-3804","name":"แก้ไขท่อน้ำทิ้งอ่างล้างจาน+บ่อดักไขมัน                          1            4500","qty":1,"price":4500.0},{"id":"imported-3805","name":"เช็คระบบน้ำดีห้องน้ำ                                   6            1000","qty":1,"price":6000.0},{"id":"imported-3806","name":"เช็คระบบน้ำทั้งหมด                                     1            5500","qty":1,"price":5500.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["รับประกันงานติดตั้ง 6 เดือน"],"createdAt":1703283200000,"updatedAt":1703283200000},{"id":"imported-0039","docNo":"QT-0039","customerName":"คุณปั๊ บ","dateText":"5 มีค 69","items":[{"id":"imported-3900","name":"ติดตั้งชักโครก                                       6            1000","qty":1,"price":6000.0},{"id":"imported-3901","name":"ติดตั้งอ่างล้างหน้า                                    6              700","qty":1,"price":4200.0},{"id":"imported-3902","name":"ติดตั้งก็อกผสมเรนชาวเวอร์                                  6             1100","qty":1,"price":6600.0},{"id":"imported-3903","name":"ติดตั้งสต็อบวาวห้องละ 5 ตัว                                6              500","qty":1,"price":3000.0},{"id":"imported-3904","name":"ติดตั้งที่ใส่กระดาษทิชชู                                 6               60","qty":1,"price":360.0},{"id":"imported-3905","name":"ติดตั้งกระจก                                        6              400","qty":1,"price":2400.0},{"id":"imported-3906","name":"ติดตั้งก็อกน้ำดี                                     6              100","qty":1,"price":600.0},{"id":"imported-3907","name":"ติดตั้งราวแขวนผ้า                                      6               80","qty":1,"price":480.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["-รับประกันรั่วซึม 5 เดือน"],"createdAt":1703369600000,"updatedAt":1703369600000},{"id":"imported-0040","docNo":"QT-0040","customerName":"คุณมาย","dateText":"—","items":[{"id":"imported-4000","name":"ถังบำบัด 1,600 ลิตร 1ถังต่อหลัง บ้านA1-A5และB1-B5","qty":1,"price":0},{"id":"imported-4001","name":"บ่อซึมหรือบ่อวง 80*40 ซม หลังละ 10วง บ้านA1-A5และB1-B5","qty":1,"price":0},{"id":"imported-4002","name":"แก้เรื่องระบบกลิ่น บ้านA1-A5และB1-B5                              10              22,700","qty":1,"price":227000.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["ราคารวมค่าของและค่าแรง ยกเว้นค่าแม็คโคร","รับประกันอุดตันและกลิ่น 1ปี"],"createdAt":1703456000000,"updatedAt":1703456000000},{"id":"imported-0041","docNo":"QT-0041","customerName":"หลวงปู่ ทวด","dateText":"28 เมษายน","items":[{"id":"imported-4100","name":"งานเดินหลอดไฟ 10 จุด + ตู้ consumer                              1           7,500","qty":1,"price":7500.0},{"id":"imported-4101","name":"งานเดินท่อชักโครกน้ำดี + อ่างล้างหน้า + ฟอเดน                          1           4,500","qty":1,"price":4500.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["รับประกันงานติดตั้ง 6 เดือน"],"createdAt":1703542400000,"updatedAt":1703542400000},{"id":"imported-0042","docNo":"QT-0042","customerName":"K.Phatcha","dateText":"25 เมษายน 2569","items":[{"id":"imported-4200","name":"ติดตั้งถังน้ำซูโม 1000 ลิตร                                     1          7500","qty":1,"price":7500.0},{"id":"imported-4201","name":"ติิดตั้งปั๊ มน้ำ Mitsubishi 150 วัต                               1          6500","qty":1,"price":6500.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["รับประกันงานติดตั้ง 6 เดือน"],"createdAt":1703628800000,"updatedAt":1703628800000},{"id":"imported-0043","docNo":"QT-0043","customerName":"คุณสนชัย","dateText":"28 กพ 69","items":[{"id":"imported-4300","name":"งานแย็กพื้นต่อท่อน้ำฝนลงบ่อพัก                                1           2,700","qty":1,"price":2700.0},{"id":"imported-4301","name":"ฝาบ่อพัก 30*40                                         3             250","qty":1,"price":750.0},{"id":"imported-4302","name":"ฝาบ่อวง 60 ซม                                         1             250","qty":1,"price":250.0},{"id":"imported-4303","name":"หลังคาคลุมเครื่องกรองน้ำ ยาว 2เมตร กว้าง1.30 เมตร                      1          15,500","qty":1,"price":15500.0},{"id":"imported-4304","name":"ชุดเครื่องกรองน้ำ                                      1          40,000","qty":1,"price":40000.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["-รับประกัน 1ปี"],"createdAt":1703715200000,"updatedAt":1703715200000},{"id":"imported-0044","docNo":"QT-0044","customerName":"คุณอะตอม","dateText":"13 มีค 69","items":[{"id":"imported-4400","name":"เดินเมนน้ำดีภายในบ้าน                                   1           7,500","qty":1,"price":7500.0},{"id":"imported-4401","name":"เดินเมนน้ำดีด้านนอกตัวบ้าน                                1           3,500","qty":1,"price":3500.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["รับประกันงานติดตั้ง 6 เดือน"],"createdAt":1703801600000,"updatedAt":1703801600000},{"id":"imported-0045","docNo":"QT-0045","customerName":"คุณจุ้ย","dateText":"13 มีค 69","items":[{"id":"imported-4500","name":"ติดตั้งตู้คอนซูเมอร์                                  1           3,800","qty":1,"price":3800.0},{"id":"imported-4501","name":"ติดตั้งไฟดาวน์ไลฟ์                                     5              800","qty":1,"price":4000.0},{"id":"imported-4502","name":"ติดตั้งไฟกริ่ง                                     2           1,000","qty":1,"price":2000.0},{"id":"imported-4503","name":"ติดตั้งไฟเชิงชาย                                     3              800","qty":1,"price":2400.0},{"id":"imported-4504","name":"ติดตั้งปลั๊ก                                      3           1,000","qty":1,"price":3000.0},{"id":"imported-4505","name":"เดินเมนแอร์                                        1           1,500","qty":1,"price":1500.0},{"id":"imported-4506","name":"เดินสายเมนจากตู่คอนซูเมอร์ตู้เก่าเดิมาตู้ใหม่                      1            3500","qty":1,"price":3500.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["รับประกันงานติดตั้ง 6 เดือน"],"createdAt":1703888000000,"updatedAt":1703888000000},{"id":"imported-0046","docNo":"QT-0046","customerName":"คุณแบงค์","dateText":"6 เมษายน 69","items":[{"id":"imported-4600","name":"งานต่อระบบถังน้ำดี 6ถัง","qty":1,"price":6.0},{"id":"imported-4601","name":"งานต่อระบบปั๊ ม 4ตัว","qty":1,"price":4.0},{"id":"imported-4602","name":"งานต่อระบบถังแชมเปญ","qty":1,"price":1.0},{"id":"imported-4603","name":"งานต่อระบบเครื่องกรอง                                   1","qty":1,"price":75000.0},{"id":"imported-4604","name":"งานเดินท่อ สเมิร์ฟ","qty":1,"price":1.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["รับประกันรั่วซึม 1ปี"],"createdAt":1703974400000,"updatedAt":1703974400000},{"id":"imported-0047","docNo":"QT-0047","customerName":"คุณนิค","dateText":"6 เมษายน 69","items":[{"id":"imported-4700","name":"งานเดินระบบสปริงเกอร์รอบสระ","qty":1,"price":1.0},{"id":"imported-4701","name":"งานเดินระบบสปริงเกอร์ร้านกาแฟ","qty":1,"price":1.0},{"id":"imported-4702","name":"งานเดินระบบสปริงเกอร์หน้าลานจอดรถ","qty":1,"price":1.0},{"id":"imported-4703","name":"งานเดินท่อไอพ่นหมอก                                      1","qty":1,"price":38000.0},{"id":"imported-4704","name":"งานเดินระบบสปริงเกอร์กำแพงหน้าถนน","qty":1,"price":1.0},{"id":"imported-4705","name":"งานเดินระบบไฟสนามฝั่งรีสอร์ท","qty":1,"price":1.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["รับประกันงานติดตั้ง 6 เดือน"],"createdAt":1704060800000,"updatedAt":1704060800000},{"id":"imported-0048","docNo":"QT-0048","customerName":"Kornphong","dateText":"16 เมษายน 69","items":[{"id":"imported-4800","name":"งานเดินท่อเมน 3\"นิ้ว 130เมตร","qty":1,"price":1.0},{"id":"imported-4801","name":"โพท่อ 1\" พร้อมบอลวาล์ว                                    5","qty":1,"price":75000.0},{"id":"imported-4802","name":"ติดตั้งหัวเมนประปา","qty":1,"price":1.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["รับประกันงานติดตั้ง 6 เดือน"],"createdAt":1704147200000,"updatedAt":1704147200000},{"id":"imported-0049","docNo":"QT-0049","customerName":"พัชรมัย","dateText":"30 เมษายน 69","items":[{"id":"imported-4900","name":"ท่อ PE นิ้วครึ่ง                                        1","qty":1,"price":6600.0},{"id":"imported-4901","name":"งานเดินสายไฟ vct พร้อมลูกลอย 50 เมตร                              1           8,900","qty":1,"price":8900.0},{"id":"imported-4902","name":"งานเดิท่อร้อยสายไฟ ท่อ PE 50เมตร ขนาด 4หุน                           1           4,300","qty":1,"price":4300.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["รับประกันรั่วซึม 1ปี"],"createdAt":1704233600000,"updatedAt":1704233600000},{"id":"imported-0050","docNo":"QT-0050","customerName":"พัชรมัย","dateText":"30 เมษายน 69","items":[{"id":"imported-5000","name":"งานจัดระบบบ่อสเมิร์ฟให้เสมอพื้นปัจจุบัน                           1           5,500","qty":1,"price":5500.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["รับประกันงานติดตั้ง 6 เดือน"],"createdAt":1704320000000,"updatedAt":1704320000000},{"id":"imported-0051","docNo":"QT-0051","customerName":"คุณโจ","dateText":"7 พฤษภาคม 69","items":[{"id":"imported-5100","name":"งานเปลี่ยนสารกรองเรซิ่น 75 ลิตร                                1          8,500","qty":1,"price":8500.0},{"id":"imported-5101","name":"งานเปลี่ยนสารกรองคาร์บอน 75 ลิตร                                 1          6,500","qty":1,"price":6500.0},{"id":"imported-5102","name":"งานต่อระบบถังน้ำใหม่ทั้งหมด                                   1          4,000","qty":1,"price":4000.0},{"id":"imported-5103","name":"ล้างถังน้ำ3ใบ                                         3            800","qty":1,"price":2400.0},{"id":"imported-5104","name":"งานแก้ระบบน้ำบ้านหลังใหญ่มารวมที่ใต้ถังเก็บน้ำ                        1          14000","qty":1,"price":14000.0},{"id":"imported-5105","name":"งานแก้ระบบน้ำใต้ถังเก็บน้ำใหม่                                1          17000","qty":1,"price":17000.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["- รับประกันรั่วซึม 1 ปี"],"createdAt":1704406400000,"updatedAt":1704406400000},{"id":"imported-0052","docNo":"QT-0052","customerName":"คุณหนู","dateText":"28 พฤษภาคม 69","items":[{"id":"imported-5200","name":"งานประตูบ้าน 80ซม*1.50เมตร                                    1          5,400","qty":1,"price":5400.0},{"id":"imported-5201","name":"งานทำฝ้า 12 ตารางเมตรพร้อมทาสี                                  1         20,000","qty":1,"price":20000.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["รับประกันงานติดตั้ง 6 เดือน"],"createdAt":1704492800000,"updatedAt":1704492800000},{"id":"imported-0053","docNo":"QT-0053","customerName":"คุณหน่อย","dateText":"6 พฤษภาคม 69","items":[{"id":"imported-5300","name":"ใส่เฟสโปรเทคชั่น (Phase Protection)                                 1","qty":1,"price":4120.0},{"id":"imported-5301","name":"เพื่อเอาไดโว่จุ่มแช่ไว้                                   1","qty":1,"price":3605.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["รับประกันงานติดตั้ง 6 เดือน"],"createdAt":1704579200000,"updatedAt":1704579200000},{"id":"imported-0054","docNo":"QT-0054","customerName":"ภูผาดาว","dateText":"20 มิถุนายน 69","items":[{"id":"imported-5400","name":"เปลี่ยนปั๊ มซับเมอร์ส(franklin)ขนาด1.5แรง                           1          22,000","qty":1,"price":22000.0},{"id":"imported-5401","name":"ค่ายกซับเมอร์ส 64เมตร                                     64              150","qty":1,"price":9600.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["รับประกันงานติดตั้ง 6 เดือน"],"createdAt":1704665600000,"updatedAt":1704665600000},{"id":"imported-0055","docNo":"QT-0055","customerName":"โลตัส","dateText":"20 มิถุนายน 69","items":[{"id":"imported-5500","name":"งานแก้ไขท่อน้ำทิ้ง อ่างล้างจานรั่วซึม                            1           4,500","qty":1,"price":4500.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["รับประกันรั่วซึม 1ปี"],"createdAt":1704752000000,"updatedAt":1704752000000},{"id":"imported-0056","docNo":"QT-0056","customerName":"K.Bomboy","dateText":"22 มิถุนายน 69","items":[{"id":"imported-5600","name":"งานรื้อถอนพื้นลามิเนต                                      1           2,500","qty":1,"price":2500.0},{"id":"imported-5601","name":"งานปูพื้นลามิเนต(12ตารางเมตร)                                   1           5,500","qty":1,"price":5500.0},{"id":"imported-5602","name":"งานปูพื้นกระเบื้อง พร้อมปูกาว (12ตารางเมตร)                           12              670","qty":1,"price":8040.0},{"id":"imported-5603","name":"(พร้อมสี) พร้อมแก้ไขรอยชำรุด                                   1","qty":1,"price":8500.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["รับประกันงานติดตั้ง 6 เดือน"],"createdAt":1704838400000,"updatedAt":1704838400000},{"id":"imported-0057","docNo":"QT-0057","customerName":"K.Phatcha","dateText":"23 มิถุนายน 69","items":[{"id":"imported-5700","name":"งานเปลี่ยนตู้ควบคุมใหม่                                     1           7,000","qty":1,"price":7000.0},{"id":"imported-5701","name":"งานยกซับเมอร์สขึ้น-ลง                                      52              170","qty":1,"price":8840.0},{"id":"imported-5702","name":"งานเดินลูกลอยอัติโนมัติ 13 เมตร                                 1            5500","qty":1,"price":5500.0},{"id":"imported-5703","name":"งานเปลี่ยน ซับเมอร์ส                                       1           22000","qty":1,"price":22000.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["-รับประกันลูกลอย 1 ปี","-รับประกันซับเมอร์ส 1 ปี"],"createdAt":1704924800000,"updatedAt":1704924800000},{"id":"imported-0058","docNo":"QT-0058","customerName":"บาร์นยาร์ด เขาใหญ่","dateText":"23 มิถุนายน 69","items":[{"id":"imported-5800","name":"งานเดินระบบท่อประปาโซลที่ 1 ยึดแคม+ซัพพอร์ต                                  115                150             17250","qty":1,"price":17250.0},{"id":"imported-5801","name":"งานเดินระบบท่อประปาโซลที่ 2 ขุดฝั่ง                                    136                170             23120","qty":1,"price":23120.0},{"id":"imported-5802","name":"งานซ่อมรั่วโซลที่ 2                                             1                1500                 1500        1,500.00                     1 8101 ต่อตรงท่อตัว                 1             675","qty":1,"price":675.0},{"id":"imported-5803","name":"อุปกรณ์รวม                                                                                          0           0.00                       2 8104 ต่อเกลียวตัว                 1              40","qty":1,"price":40.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["รับประกันรั่วซึม 5 เดือน"],"createdAt":1705011200000,"updatedAt":1705011200000},{"id":"imported-0059","docNo":"QT-0059","customerName":"บาร์นยาร์ด เขาใหญ่","dateText":"23 มิถุนายน 69","items":[{"id":"imported-5900","name":"งานเดินระบบท่อประปาโซลที่ 1 ยึดแคม+ซัพพอร์ต                                 115                150             17250","qty":1,"price":17250.0},{"id":"imported-5901","name":"งานซ่อมรั่วโซลที่ 2                                             1                1500                 1500        1,500.00                     1 8101 ต่อตรงท่อตัว                 1             675","qty":1,"price":675.0},{"id":"imported-5902","name":"0.00                       2 8104 ต่อเกลียวตัว                 1              40","qty":1,"price":40.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["รับประกันรั่วซึม 5 เดือน"],"createdAt":1705097600000,"updatedAt":1705097600000},{"id":"imported-0060","docNo":"QT-0060","customerName":"K.Taveesak","dateText":"27 มิถุนายน 69","items":[{"id":"imported-6000","name":"งานแก้ไขท่อ PVC 4หุน รั่วซึม                  4จุด","qty":1,"price":2500.0},{"id":"imported-6001","name":"งานเจาะคอริ่งท่อชักโครก ห้องน้ำด้านล่าง+FD           1จุด","qty":1,"price":2000.0},{"id":"imported-6002","name":"งานเดินท่อก๊อกสนาม                        5จุด","qty":1,"price":2500.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["-รับประกันรั่วซึม 1เดือน"],"createdAt":1705184000000,"updatedAt":1705184000000},{"id":"imported-0061","docNo":"QT-0061","customerName":"K.Nong","dateText":"13 กรกฎาคม 69","items":[{"id":"imported-6100","name":"(ระบบเครื่องกรอง 2 ถัง หัวอัตโนมัติ 2 หัว พร้อมสารเครื่องกรอง)","qty":1,"price":1.0},{"id":"imported-6101","name":"งานเดินระบบซัมเมอร์ส                                         1        12,800.00       4,500.00","qty":1,"price":17300.0},{"id":"imported-6102","name":"งานเดินระบบปั๊ มน้ำ 2ชุด                                     2        58,300.00       8,500.00","qty":1,"price":66800.0},{"id":"imported-6103","name":"งานเดินระบบสปิงเกอร์ 1โซน                                       1        15,100.00      10,000.00","qty":1,"price":25100.0},{"id":"imported-6104","name":"งานเดินระบบก๊อกน้ำสนาม 4จุด                                      4          5,300.00      7,500.00","qty":1,"price":12800.0},{"id":"imported-6105","name":"งานเดินเมนระบบน้ำเข้าบ้านใหม่ทั้งหมด                                 1        10,500.00       9,000.00","qty":1,"price":19500.0},{"id":"imported-6106","name":"งานเดินระบบตู้ควบคุมสระว่ายน้ำ2ชุด                                  2          8,000.00      5,000.00","qty":1,"price":13000.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["รับประกันงานติดตั้ง 6 เดือน ชุดเครื่องกรอง","รับประกันหัวควบคุมอัตโนมัติ 1 ปี","รับประกันถังกรอง 2 ปี","รับประกันรั่วซึม 1ปี","รับประกันงานระบบปั๊ มน้ำ 1ปี"],"createdAt":1705270400000,"updatedAt":1705270400000},{"id":"imported-0062","docNo":"QT-0062","customerName":"K.imun.s","dateText":"22 กรกฎาคม 69","items":[{"id":"imported-6200","name":"งานเปลี่ยนตู้คอนซูเมอร์                          1                    3800             1500","qty":1,"price":5300.0},{"id":"imported-6201","name":"งานเพิ่มเฟสโปรเทคชั่น                            1                    5500             1500","qty":1,"price":7000.0},{"id":"imported-6202","name":"งานเปลี่ยนปั๊ ม Mitsubishi 300 วัต                    1                    8500             1000","qty":1,"price":9500.0},{"id":"imported-6203","name":"งานเปลี่ยนอะไหล่ชักโครก                           1                     800                500","qty":1,"price":1300.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["-รับประกันรั่วซึม 5เดือน"],"createdAt":1705356800000,"updatedAt":1705356800000},{"id":"imported-0063","docNo":"QT-0063","customerName":"TheX10","dateText":"22 กรกฎาคม 69","items":[{"id":"imported-6300","name":"งานเดินเมนตู้ควบคุม ไปกลับ 30 เมตร","qty":1,"price":30.0},{"id":"imported-6301","name":"ติดตั้งตู้ADS                                     1","qty":1,"price":15000.0},{"id":"imported-6302","name":"ย้ายเมนจากมิเตอร์","qty":1,"price":1.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["รับประกันงานติดตั้ง 6 เดือน"],"createdAt":1705443200000,"updatedAt":1705443200000},{"id":"imported-0064","docNo":"QT-0064","customerName":"คุณหน่อย","dateText":"25 กรกฎาคม 69","items":[{"id":"imported-6400","name":"งานเปลี่ยนตู้คอนซูเมอร์ 12 ช่อง","qty":1,"price":12.0},{"id":"imported-6401","name":"งานต่อสายเมนเพิ่มและสายย่อยต่างๆ                            1","qty":1,"price":9300.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["รับประกันงานติดตั้ง 6 เดือน"],"createdAt":1705529600000,"updatedAt":1705529600000},{"id":"imported-0065","docNo":"QT-0065","customerName":"คุณหน่อย","dateText":"25 กรกฎาคม 69","items":[{"id":"imported-6500","name":"ติดตั้งแอร์รุ่น MSY-GY30VF-THI                                 1          5,000","qty":1,"price":5000.0},{"id":"imported-6501","name":"ล้างแอร์                                           3            800","qty":1,"price":2400.0},{"id":"imported-6502","name":"เช็คปั๊ มน้ำ(ยังไม่รวมแก้ไข)                                1            500","qty":1,"price":500.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["ฟรีท่อน้ำยาระยะ 4 เมตร หากเกินกว่า 4 เมตร คิดเมตรละ 600 บาท","รับประกันรั่วซึมแอร์ 1ปี"],"createdAt":1705616000000,"updatedAt":1705616000000},{"id":"imported-0066","docNo":"QT-0066","customerName":"คุณหน่อย","dateText":"28 กรกฎาคม 69","items":[{"id":"imported-6600","name":"(ระบบเครื่องกรอง 2 ถัง หัวอัตโนมัติ 2 หัว พร้อมสารเครื่องกรอง)","qty":1,"price":1.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["รับประกันงานติดตั้ง 6 เดือน ชุดเครื่องกรอง","รับประกันหัวควบคุมอัตโนมัติ 1 ปี","รับประกันถังกรอง 2 ปี"],"createdAt":1705702400000,"updatedAt":1705702400000},{"id":"imported-0067","docNo":"QT-0067","customerName":"คุณหน่อย","dateText":"28 กรกฎาคม 69","items":[{"id":"imported-6700","name":"งานเปลี่ยนชักโครก                                       2          5,800.00      2,400.00","qty":1,"price":8200.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["รับประกันการติดตั้ง 3 เดือน"],"createdAt":1705788800000,"updatedAt":1705788800000},{"id":"imported-0068","docNo":"QT-0068","customerName":"THE LE NATURE","dateText":"28 กรกฎาคม 69","items":[{"id":"imported-6800","name":"งานเดินท่อร้อยสายเมนไฟฟ้า 18เมตร 4เส้น                             72         100.00","qty":1,"price":7200.0},{"id":"imported-6801","name":"งานติดตั้งตู้ไฟฟ้า 3 เฟส พร้อมเข้าตู้                           1       3,500.00","qty":1,"price":3500.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["รับประกันงานติดตั้ง 6 เดือน"],"createdAt":1705875200000,"updatedAt":1705875200000},{"id":"imported-0069","docNo":"QT-0069","customerName":"คุณ นิค","dateText":"31 กรกฎาคม 69","items":[{"id":"imported-6900","name":"งานเดินไฟราวหน้าร้านกาแฟ                                   1       2,500.00","qty":1,"price":2500.0},{"id":"imported-6901","name":"งานเดินไฟราวหลังร้านกาแฟ                                   1       1,500.00","qty":1,"price":1500.0},{"id":"imported-6902","name":"งานเดิน สปริงเกอร์ 4 โซน                                  4       1,000.00","qty":1,"price":4000.0},{"id":"imported-6903","name":"งานย้ายปั๊ มสวนมาตรงจุดรวมปั๊ ม                             1       1,500.00","qty":1,"price":1500.0},{"id":"imported-6904","name":"งานเดินไฟหัวเสาข้างบ้านใหญ่                                 1       2,000.00","qty":1,"price":2000.0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["รับประกันงานติดตั้ง 6 เดือน"],"createdAt":1705961600000,"updatedAt":1705961600000},{"id":"imported-0070","docNo":"QT-0070","customerName":"8 Valley KhaoYai","dateText":"30 กรกฎาคม 69","items":[{"id":"imported-7000","name":"งานทากันซึมบ้าน M5","qty":1,"price":15000.0},{"id":"imported-7001","name":"0.00","qty":1,"price":0}],"eqItems":[],"colHeaders":["รายการ","หน่วย","ราคา/หน่วย","รวมค่าแรงและอุปกรณ์"],"eqColHeaders":["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"],"notes":["รับประกันการรั่วซึม 12 เดือน (หลังส่งมอบงาน)"],"createdAt":1706048000000,"updatedAt":1706048000000}];
+
+
+function seedIfEmpty() {
+  try {
+    var existing = localStorage.getItem("changmen_quotations_v1");
+    var arr = existing ? JSON.parse(existing) : [];
+    if (arr.length === 0) {
+      localStorage.setItem("changmen_quotations_v1", JSON.stringify(SEED_QUOTES));
+      localStorage.setItem("changmen_counter_v1", String(SEED_QUOTES.length + 1));
+    }
+  } catch(e) { console.warn("seed:", e); }
+}
+seedIfEmpty();
+
+// ── App ────────────────────────────────────────────────────
+/* ═══ HELPERS ═══ */
+const THB=(n)=>(Number(n)||0).toLocaleString("th-TH",{minimumFractionDigits:2,maximumFractionDigits:2});
+const uid=()=>Math.random().toString(36).slice(2,10)+Date.now().toString(36);
+const TH_MONTHS=["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"];
+const TH_MONTHS_SHORT=["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
+function todayThai(){const d=new Date();return `${d.getDate()} ${TH_MONTHS[d.getMonth()]} ${d.getFullYear()+543}`;}
+const newItem=()=>({id:uid(),name:"",qty:1,price:0,labor:0,material:0});
+const newEqItem=()=>({id:uid(),name:"",qty:1,unit:"ชิ้น",price:0});
+const DEF_COLS=["รายการ","หน่วย","ค่าอุปกรณ์","ราคาค่าแรง","รวมค่าแรงและอุปกรณ์"];
+const DEF_EQCOLS=["ชื่ออุปกรณ์ / วัสดุ","จำนวน","หน่วย","ราคา/หน่วย","รวม (บาท)"];
+const mkQuote=no=>({id:uid(),docNo:no,customerName:"",dateText:todayThai(),items:[newItem()],eqItems:[],splitMode:true,colHeaders:[...DEF_COLS],eqColHeaders:[...DEF_EQCOLS],notes:["รับประกันงานติดตั้ง 6 เดือน"],signature:null,createdAt:Date.now()});
+const mkWarrantyBase=()=>({id:uid(),installDate:todayThai(),customerName:"",location:"",jobDetail:"",warrantyMonths:1,technicianName:"",signature:null,createdAt:Date.now()});
+const mkWarranty=mkWarrantyBase;
+const mkReceipt=no=>({id:uid(),docNo:no,customerName:"",dateText:todayThai(),items:[newItem()],payMethod:"โอนเงิน",signature:null,createdAt:Date.now()});
+const DEF_CO={title:"ใบเสนอราคางานช่างเม่น Service",payeeName:"นายสราวุธ โตจะโป๊ะ",bankName:"ธนาคารไทยพาณิชย์",accountNo:"4043053480",paymentTerms:"มัดจำ 50% ก่อนเริ่มงาน 3 วัน"};
+const K={Q:"changmen_quotations_v1",W:"changmen_warranties_v1",R:"changmen_receipts_v1",CO:"changmen_company_v1",N:"changmen_counter_v1",RN:"changmen_rcounter_v1"};
+const load=(k,f)=>{try{const r=localStorage.getItem(k);return r?JSON.parse(r):f;}catch (e2){return f;}};
+const save=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch (e3){}};
+const genQ=n=>`QT-${String(n).padStart(4,"0")}`;
+const genR=n=>`RC-${String(n).padStart(4,"0")}`;
+// line total: merged rows use qty*price, split uses labor+material, legacy uses qty*price
+const lineTotal=(it,split)=>{
+  if(split && !it.merged) return (Number(it.labor)||0)+(Number(it.material)||0);
+  return (Number(it.qty)||1)*(Number(it.price)||0);
+};
+const itemTotal=(items,split)=>(items||[]).reduce((s,it)=>s+lineTotal(it,split),0);
+const laborTotal=(items)=>(items||[]).reduce((s,it)=>s+(it.merged?0:(Number(it.labor)||0)),0);
+const materialTotal=(items)=>(items||[]).reduce((s,it)=>s+(it.merged?0:(Number(it.material)||0)),0);
+
+
+/* ═══ APP ═══ */
+function App(){
+  const [view,setView]=useState("editor");
+  const [co,setCo]=useState(()=>load(K.CO,DEF_CO));
+  const [quotes,setQuotes]=useState(()=>load(K.Q,[]));
+  const [wars,setWars]=useState(()=>load(K.W,[]));
+  const [rcpts,setRcpts]=useState(()=>load(K.R,[]));
+  const [qn,setQn]=useState(()=>load(K.N,1));
+  const [rn,setRn]=useState(()=>load(K.RN,1));
+  const [quote,setQuote]=useState(()=>mkQuote(genQ(load(K.N,1))));
+  const [war,setWar]=useState(mkWarranty);
+  const [rcpt,setRcpt]=useState(()=>mkReceipt(genR(load(K.RN,1))));
+  const [toast,setToast]=useState(null);
+
+  useEffect(()=>save(K.CO,co),[co]);
+  useEffect(()=>save(K.Q,quotes),[quotes]);
+  useEffect(()=>save(K.W,wars),[wars]);
+  useEffect(()=>save(K.R,rcpts),[rcpts]);
+  useEffect(()=>save(K.N,qn),[qn]);
+  useEffect(()=>save(K.RN,rn),[rn]);
+
+  const flash=msg=>{setToast(msg);clearTimeout(flash._t);flash._t=setTimeout(()=>setToast(null),2500);};
+
+  /* quote */
+  const upQ=p=>setQuote(q=>({...q,...p}));
+  const updItem=(id,p)=>upQ({items:quote.items.map(it=>it.id===id?{...it,...p}:it)});
+  const addItem=()=>upQ({items:[...quote.items,newItem()]});
+  const delItem=id=>upQ({items:quote.items.length>1?quote.items.filter(i=>i.id!==id):quote.items});
+  const addNote=()=>upQ({notes:[...quote.notes,""]});
+  const updNote=(i,v)=>upQ({notes:quote.notes.map((n,j)=>j===i?v:n)});
+  const delNote=i=>upQ({notes:quote.notes.filter((_,j)=>j!==i)});
+  const updEq=(id,p)=>upQ({eqItems:(quote.eqItems||[]).map(it=>it.id===id?{...it,...p}:it)});
+  const addEq=()=>upQ({eqItems:[...(quote.eqItems||[]),newEqItem()]});
+  const delEq=id=>upQ({eqItems:(quote.eqItems||[]).filter(i=>i.id!==id)});
+  const delEqTable=()=>upQ({eqItems:[]});
+  const updQH=(i,v)=>upQ({colHeaders:(quote.colHeaders||DEF_COLS).map((h,j)=>j===i?v:h)});
+  const updEH=(i,v)=>upQ({eqColHeaders:(quote.eqColHeaders||DEF_EQCOLS).map((h,j)=>j===i?v:h)});
+  const qTotal=itemTotal(quote.items,quote.splitMode);
+  const eqTotal=itemTotal(quote.eqItems,false);
+  const qCols=quote.colHeaders||DEF_COLS;
+  const eqCols=quote.eqColHeaders||DEF_EQCOLS;
+
+  const saveQ=()=>{
+    if(!quote.customerName.trim()){flash("กรุณาใส่ชื่อลูกค้าก่อนบันทึก");return;}
+    setQuotes(h=>{const u={...quote,updatedAt:Date.now()};return h.some(q=>q.id===u.id)?h.map(q=>q.id===u.id?u:q):[u,...h];});
+    flash("✅ บันทึกใบเสนอราคาแล้ว");
+  };
+  const newQ=()=>{const n=qn+1;setQn(n);setQuote(mkQuote(genQ(n)));setView("editor");};
+  const openQ=q=>{setQuote(q);setView("editor");};
+  const delQ=id=>setQuotes(h=>h.filter(q=>q.id!==id));
+  const dupQ=q=>{const n=qn+1;setQn(n);setQuote({...q,id:uid(),docNo:genQ(n),dateText:todayThai(),createdAt:Date.now()});setView("editor");};
+
+  /* warranty */
+  const saveW=()=>{
+    if(!war.customerName.trim()){flash("กรุณาใส่ชื่อลูกค้าก่อนบันทึก");return;}
+    setWars(w=>{const u={...war,updatedAt:Date.now()};return w.some(x=>x.id===u.id)?w.map(x=>x.id===u.id?u:x):[u,...w];});
+    flash("✅ บันทึกใบรับประกันแล้ว");
+  };
+  const newW=()=>{setWar(mkWarranty());setView("warranty");};
+  const openW=w=>{setWar(w);setView("warranty");};
+  const delW=id=>setWars(w=>w.filter(x=>x.id!==id));
+  const dupW=w=>{setWar({...w,id:uid(),installDate:todayThai(),createdAt:Date.now()});setView("warranty");};
+
+  /* receipt */
+  const upR=p=>setRcpt(r=>({...r,...p}));
+  const updRI=(id,p)=>upR({items:rcpt.items.map(it=>it.id===id?{...it,...p}:it)});
+  const addRI=()=>upR({items:[...rcpt.items,newItem()]});
+  const delRI=id=>upR({items:rcpt.items.length>1?rcpt.items.filter(i=>i.id!==id):rcpt.items});
+  const rTotal=itemTotal(rcpt.items,false);
+  const saveR=()=>{
+    if(!rcpt.customerName.trim()){flash("กรุณาใส่ชื่อลูกค้าก่อนบันทึก");return;}
+    setRcpts(rs=>{const u={...rcpt,updatedAt:Date.now()};return rs.some(r=>r.id===u.id)?rs.map(r=>r.id===u.id?u:r):[u,...rs];});
+    flash("✅ บันทึกใบเสร็จแล้ว");
+  };
+  const newR=()=>{const n=rn+1;setRn(n);setRcpt(mkReceipt(genR(n)));setView("receipt");};
+  const openR=r=>{setRcpt(r);setView("receipt");};
+  const delR=id=>setRcpts(rs=>rs.filter(r=>r.id!==id));
+  const dupR=r=>{const n=rn+1;setRn(n);setRcpt({...r,id:uid(),docNo:genR(n),dateText:todayThai(),createdAt:Date.now()});setView("receipt");};
+
+  /* export/import */
+  const exportData=()=>{
+    const d={quotes,wars,rcpts,co,qn,rn,at:new Date().toISOString()};
+    const a=document.createElement("a");
+    a.href=URL.createObjectURL(new Blob([JSON.stringify(d,null,2)],{type:"application/json"}));
+    const dt=new Date();
+    a.download=`changmen_${dt.getFullYear()}${String(dt.getMonth()+1).padStart(2,"0")}${String(dt.getDate()).padStart(2,"0")}.json`;
+    a.click();flash("✅ สำรองข้อมูลเรียบร้อย");
+  };
+  const importRef=useRef();
+  const importData=e=>{
+    const file=e.target.files[0];if(!file)return;
+    const fr=new FileReader();
+    fr.onload=ev=>{
+      try{
+        const d=JSON.parse(ev.target.result);
+        if(d.quotes)setQuotes(d.quotes);
+        if(d.wars)setWars(d.wars);
+        if(d.rcpts)setRcpts(d.rcpts);
+        if(d.co)setCo(d.co);
+        if(d.qn)setQn(d.qn);
+        if(d.rn)setRn(d.rn);
+        flash(`✅ นำเข้าสำเร็จ: ใบเสนอ ${(d.quotes||[]).length} · ใบเสร็จ ${(d.rcpts||[]).length} · ใบรับประกัน ${(d.wars||[]).length}`);
+      }catch (e4){flash("❌ ไฟล์ไม่ถูกต้อง");}
+    };
+    fr.readAsText(file);e.target.value="";
+  };
+
+  const totalDocs=quotes.length+wars.length+rcpts.length;
+  const NAV=[
+    {id:"editor",   label:"ใบเสนอ",    icon:React.createElement(IcFile, { s: 22,})},
+    {id:"receipt",  label:"ใบเสร็จ",   icon:React.createElement(IcReceipt, { s: 22,})},
+    {id:"warranty", label:"รับประกัน", icon:React.createElement(IcShield, { s: 22,})},
+    {id:"report",   label:"รายงาน",    icon:React.createElement(IcChart, { s: 22,})},
+    {id:"history",  label:"ประวัติ",   icon:React.createElement(IcHistory, { s: 22,})},
+  ];
+
+  const PAGE_TITLES={editor:"ใบเสนอราคา",receipt:"ใบเสร็จรับเงิน",warranty:"ใบรับประกัน",report:"รายงาน",history:"ประวัติ",settings:"ตั้งค่า"};
+
+  return (
+    React.createElement('div', { className: "app-root",}
+
+
+      , React.createElement('header', { className: "topbar no-print" ,}
+        , React.createElement('div', { className: "topbar-title",}, PAGE_TITLES[view]||"")
+        , React.createElement('div', { className: "topbar-actions",}
+          , view==="editor"   && React.createElement(React.Fragment, null, React.createElement('button', { className: "tbtn", onClick: saveQ,}, React.createElement(IcSave, { s: 20,})), React.createElement('button', { className: "tbtn tbtn-primary" , onClick: ()=>window.print(),}, React.createElement(IcPrint, { s: 20,})))
+          , view==="receipt"  && React.createElement(React.Fragment, null, React.createElement('button', { className: "tbtn", onClick: saveR,}, React.createElement(IcSave, { s: 20,})), React.createElement('button', { className: "tbtn tbtn-primary" , onClick: ()=>window.print(),}, React.createElement(IcPrint, { s: 20,})))
+          , view==="warranty" && React.createElement(React.Fragment, null, React.createElement('button', { className: "tbtn", onClick: saveW,}, React.createElement(IcSave, { s: 20,})), React.createElement('button', { className: "tbtn tbtn-primary" , onClick: ()=>window.print(),}, React.createElement(IcPrint, { s: 20,})))
+          , React.createElement('button', { className: "tbtn", onClick: ()=>setView("settings"),}, React.createElement(IcSettings, { s: 20,}))
+        )
+      )
+
+      , toast && React.createElement('div', { className: "toast no-print" ,}, toast)
+
+      , React.createElement('main', { className: "main-content",}
+        , view==="editor"   && React.createElement(QuoteEditor, { quote: quote, upQ: upQ, updItem: updItem, addItem: addItem, delItem: delItem, addNote: addNote, updNote: updNote, delNote: delNote, addEq: addEq, updEq: updEq, delEq: delEq, delEqTable: delEqTable, updQH: updQH, updEH: updEH, qCols: qCols, eqCols: eqCols, qTotal: qTotal, eqTotal: eqTotal, co: co, onNew: newQ,})
+        , view==="receipt"  && React.createElement(ReceiptEditor, { rcpt: rcpt, upR: upR, updRI: updRI, addRI: addRI, delRI: delRI, rTotal: rTotal, co: co, onNew: newR,})
+        , view==="warranty" && React.createElement(WarrantyEditor, { war: war, setWar: setWar, onNew: newW,})
+        , view==="report"   && React.createElement(ReportView, { quotes: quotes, rcpts: rcpts, wars: wars,})
+        , view==="history"  && React.createElement(HistoryView, { quotes: quotes, rcpts: rcpts, wars: wars, onOpenQ: openQ, onDelQ: delQ, onDupQ: dupQ, onOpenR: openR, onDelR: delR, onDupR: dupR, onOpenW: openW, onDelW: delW, onDupW: dupW, onNewQ: newQ, onNewR: newR, onNewW: newW,})
+        , view==="settings" && React.createElement(SettingsView, { co: co, setCo: setCo, onBack: ()=>setView("editor"), onExport: exportData, importRef: importRef,})
+        , React.createElement('input', { ref: importRef, type: "file", accept: ".json", style: {display:"none"}, onChange: importData,})
+      )
+
+      , React.createElement('nav', { className: "bottom-nav no-print" ,}
+        , NAV.map(n=>(
+          React.createElement('button', { key: n.id, className: `bnav-btn ${view===n.id?"active":""}`, onClick: ()=>setView(n.id),}
+            , n.icon
+            , React.createElement('span', null, n.label)
+            , n.id==="history" && totalDocs>0 && React.createElement('span', { className: "bnav-badge",}, totalDocs)
+          )
+        ))
+      )
+    )
+  );
+}
+
+/* ═══ REPORT ═══ */
+function ReportView({quotes,rcpts,wars}){
+  const [period,setPeriod]=useState("month");
+  const now=new Date();
+  function inPeriod(ts){
+    if(!ts)return false;const d=new Date(ts);
+    if(period==="month")return d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth();
+    if(period==="3m"){const p=new Date(now);p.setMonth(p.getMonth()-2);p.setDate(1);return d>=p;}
+    if(period==="6m"){const p=new Date(now);p.setMonth(p.getMonth()-5);p.setDate(1);return d>=p;}
+    if(period==="year")return d.getFullYear()===now.getFullYear();
+    return true;
+  }
+  const fRcpts=rcpts.filter(r=>inPeriod(r.createdAt));
+  const fQuotes=quotes.filter(q=>inPeriod(q.createdAt));
+  const fWars=wars.filter(w=>inPeriod(w.createdAt));
+  const totalIncome=fRcpts.reduce((s,r)=>s+itemTotal(r.items,false),0);
+  const totalQuoted=fQuotes.reduce((s,q)=>s+itemTotal(q.items,q.splitMode)+itemTotal(q.eqItems,false),0);
+  const monthlyData=useMemo(()=>{
+    const map={};
+    for(let i=5;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth()-i,1);const k=`${d.getFullYear()}-${d.getMonth()}`;map[k]={label:TH_MONTHS_SHORT[d.getMonth()],total:0};}
+    rcpts.forEach(r=>{const d=new Date(r.createdAt||0);const k=`${d.getFullYear()}-${d.getMonth()}`;if(map[k])map[k].total+=itemTotal(r.items,false);});
+    return Object.values(map);
+  },[rcpts]);
+  const maxBar=Math.max(...monthlyData.map(m=>m.total),1);
+  const custMap={};
+  fRcpts.forEach(r=>{const n=r.customerName||"(ไม่ระบุ)";if(!custMap[n])custMap[n]={name:n,income:0,count:0};custMap[n].income+=itemTotal(r.items,false);custMap[n].count++;});
+  const topCust=Object.values(custMap).sort((a,b)=>b.income-a.income).slice(0,5);
+  const payMap={};fRcpts.forEach(r=>{const m=r.payMethod||"อื่นๆ";payMap[m]=(payMap[m]||0)+1;});
+  const PERIODS=[{k:"month",l:"เดือนนี้"},{k:"3m",l:"3 เดือน"},{k:"6m",l:"6 เดือน"},{k:"year",l:"ปีนี้"},{k:"all",l:"ทั้งหมด"}];
+  return (
+    React.createElement('div', { className: "rp-root",}
+      , React.createElement('div', { className: "rp-periods",}, PERIODS.map(p=>React.createElement('button', { key: p.k, className: `rp-period-btn ${period===p.k?"active":""}`, onClick: ()=>setPeriod(p.k),}, p.l)))
+      , React.createElement('div', { className: "rp-kpi-grid",}
+        , React.createElement('div', { className: "rp-kpi-card", style: {borderTop:"3px solid #2f7d4f"},}, React.createElement('div', { className: "rp-kpi-label",}, "💰 รายรับ (ใบเสร็จ)"  ), React.createElement('div', { className: "rp-kpi-val", style: {color:"#2f7d4f"},}, THB(totalIncome)), React.createElement('div', { className: "rp-kpi-sub",}, "บาท · "  , fRcpts.length, " รายการ" ))
+        , React.createElement('div', { className: "rp-kpi-card", style: {borderTop:"3px solid #c4671f"},}, React.createElement('div', { className: "rp-kpi-label",}, "📄 มูลค่าใบเสนอ" ), React.createElement('div', { className: "rp-kpi-val", style: {color:"#c4671f"},}, THB(totalQuoted)), React.createElement('div', { className: "rp-kpi-sub",}, "บาท · "  , fQuotes.length, " ใบ" ))
+        , React.createElement('div', { className: "rp-kpi-card", style: {borderTop:"3px solid #1e40af"},}, React.createElement('div', { className: "rp-kpi-label",}, "🛡 ใบรับประกัน" ), React.createElement('div', { className: "rp-kpi-val", style: {color:"#1e40af"},}, fWars.length), React.createElement('div', { className: "rp-kpi-sub",}, "รายการ"))
+        , React.createElement('div', { className: "rp-kpi-card", style: {borderTop:"3px solid #7c3aed"},}, React.createElement('div', { className: "rp-kpi-label",}, "📊 เฉลี่ย/ใบเสร็จ" ), React.createElement('div', { className: "rp-kpi-val", style: {color:"#7c3aed"},}, fRcpts.length?THB(totalIncome/fRcpts.length):"0.00"), React.createElement('div', { className: "rp-kpi-sub",}, "บาท/งาน"))
+      )
+      , React.createElement('div', { className: "rp-section",}
+        , React.createElement('div', { className: "rp-section-title",}, "📈 รายรับรายเดือน (6 เดือนล่าสุด)"   )
+        , React.createElement('div', { className: "rp-chart",}, monthlyData.map((m,i)=>React.createElement('div', { key: i, className: "rp-bar-col",}, React.createElement('div', { className: "rp-bar-val",}, m.total>0?`${Math.round(m.total/1000)}k`:""), React.createElement('div', { className: "rp-bar-wrap",}, React.createElement('div', { className: "rp-bar", style: {height:`${Math.max((m.total/maxBar)*100,2)}%`,background:m.total>0?"var(--a)":"#e4ddd2"},})), React.createElement('div', { className: "rp-bar-label",}, m.label))))
+      )
+      , topCust.length>0&&React.createElement('div', { className: "rp-section",}, React.createElement('div', { className: "rp-section-title",}, "👥 ลูกค้าสูงสุด" ), topCust.map((c,i)=>React.createElement('div', { key: i, className: "rp-cust-row",}, React.createElement('div', { className: "rp-cust-rank",}, i+1), React.createElement('div', { className: "rp-cust-info",}, React.createElement('div', { className: "rp-cust-name",}, c.name), React.createElement('div', { className: "rp-cust-sub",}, c.count, " งาน" )), React.createElement('div', { className: "rp-cust-amount",}, THB(c.income), " ฿" ))))
+      , Object.keys(payMap).length>0&&React.createElement('div', { className: "rp-section",}, React.createElement('div', { className: "rp-section-title",}, "💳 วิธีชำระเงิน" ), React.createElement('div', { className: "rp-pay-grid",}, Object.entries(payMap).map(([m,c])=>React.createElement('div', { key: m, className: "rp-pay-card",}, React.createElement('div', { className: "rp-pay-count",}, c), React.createElement('div', { className: "rp-pay-method",}, m)))))
+      , totalIncome===0&&fQuotes.length===0&&fWars.length===0&&React.createElement('div', { className: "empty-state",}, React.createElement(IcChart, { s: 40,}), React.createElement('p', null, "ยังไม่มีข้อมูลในช่วงนี้"), React.createElement('span', null, "บันทึกเอกสารเพื่อดูรายงาน"))
+    )
+  );
+}
+
+/* ═══ HISTORY ═══ */
+function HistoryView({quotes,rcpts,wars,onOpenQ,onDelQ,onDupQ,onOpenR,onDelR,onDupR,onOpenW,onDelW,onDupW,onNewQ,onNewR,onNewW}){
+  const [tab,setTab]=useState("all");
+  const [search,setSearch]=useState("");
+  const all=[...quotes.map(q=>({...q,_t:"quote"})),...rcpts.map(r=>({...r,_t:"receipt"})),...wars.map(w=>({...w,_t:"warranty"}))].sort((a,b)=>(b.updatedAt||b.createdAt)-(a.updatedAt||a.createdAt));
+  const filtered=all.filter(d=>{
+    if(tab!=="all"&&d._t!==tab)return false;
+    const q=search.toLowerCase();
+    return !q||(d.customerName||"").toLowerCase().includes(q)||(d.docNo||"").toLowerCase().includes(q)||(d.jobDetail||"").toLowerCase().includes(q);
+  });
+  const counts={all:all.length,quote:quotes.length,receipt:rcpts.length,warranty:wars.length};
+  const META={quote:{label:"ใบเสนอ",c:"#c4671f",bg:"#fbe3c8"},receipt:{label:"ใบเสร็จ",c:"#1d6d3b",bg:"#d1fae5"},warranty:{label:"ใบรับประกัน",c:"#1e40af",bg:"#dbeafe"}};
+  function open(d){if(d._t==="quote")onOpenQ(d);else if(d._t==="receipt")onOpenR(d);else onOpenW(d);}
+  function del(d){if(d._t==="quote")onDelQ(d.id);else if(d._t==="receipt")onDelR(d.id);else onDelW(d.id);}
+  function dup(d){if(d._t==="quote")onDupQ(d);else if(d._t==="receipt")onDupR(d);else onDupW(d);}
+  return (
+    React.createElement('div', { className: "hist-root",}
+      , React.createElement('div', { className: "hist-search-wrap",}
+        , React.createElement('input', { className: "hist-search", placeholder: "🔍 ค้นหาชื่อลูกค้า / เลขที่..."   , value: search, onChange: e=>setSearch(e.target.value),})
+        , search&&React.createElement('button', { className: "hist-clear", onClick: ()=>setSearch(""),}, React.createElement(IcX, { s: 16,}))
+      )
+      , React.createElement('div', { className: "hist-tabs",}
+        , [{k:"all",l:"ทั้งหมด"},{k:"quote",l:"ใบเสนอ"},{k:"receipt",l:"ใบเสร็จ"},{k:"warranty",l:"รับประกัน"}].map(t=>(
+          React.createElement('button', { key: t.k, className: `hist-tab ${tab===t.k?"active":""}`, onClick: ()=>setTab(t.k),}, t.l, " " , React.createElement('span', { className: "hist-tab-cnt",}, counts[t.k]))
+        ))
+      )
+      , React.createElement('div', { className: "hist-new-row",}
+        , React.createElement('button', { className: "hist-new-btn", onClick: onNewQ,}, React.createElement(IcPlus, { s: 14,}), " ใบเสนอ" )
+        , React.createElement('button', { className: "hist-new-btn", onClick: onNewR,}, React.createElement(IcPlus, { s: 14,}), " ใบเสร็จ" )
+        , React.createElement('button', { className: "hist-new-btn", onClick: onNewW,}, React.createElement(IcPlus, { s: 14,}), " ใบรับประกัน" )
+      )
+      , filtered.length===0?(
+        React.createElement('div', { className: "empty-state",}, React.createElement(IcHistory, { s: 40,}), React.createElement('p', null, search?"ไม่พบรายการ":"ยังไม่มีเอกสาร"))
+      ):(
+        React.createElement('div', { className: "hist-list",}
+          , filtered.map(d=>{
+            const m=META[d._t];
+            const t=d._t!=="warranty"?itemTotal(d.items,d.splitMode):null;
+            const eqt=d._t==="quote"?itemTotal(d.eqItems,false):0;
+            const dateStr=d._t==="warranty"?d.installDate:d.dateText;
+            const sub=d._t==="warranty"?(d.jobDetail||"—"):`${THB((t||0)+eqt)} บาท${d._t==="receipt"?" · "+d.payMethod:""}`;
+            return (
+              React.createElement('div', { className: "hist-card", key: d.id+d._t,}
+                , React.createElement('div', { className: "hist-card-body", onClick: ()=>open(d),}
+                  , React.createElement('div', { className: "hist-card-top",}, React.createElement('span', { className: "hist-badge", style: {color:m.c,background:m.bg},}, m.label), React.createElement('span', { className: "hist-doc",}, d.docNo||""), React.createElement('span', { className: "hist-date",}, dateStr))
+                  , React.createElement('div', { className: "hist-name",}, d.customerName||"(ไม่ระบุชื่อ)")
+                  , React.createElement('div', { className: "hist-sub", style: {color:m.c},}, sub)
+                )
+                , React.createElement('div', { className: "hist-actions",}
+                  , React.createElement('button', { className: "icon-btn", onClick: ()=>dup(d),}, React.createElement(IcCopy, { s: 16,}))
+                  , React.createElement('button', { className: "icon-btn danger" , onClick: ()=>del(d),}, React.createElement(IcTrash, { s: 16,}))
+                )
+              )
+            );
+          })
+        )
+      )
+    )
+  );
+}
+
+/* ═══ SIGNATURE PAD ═══ */
+function SignaturePad({value,onChange,label="ลายเซ็น"}){
+  const canvasRef=useRef();
+  const drawing=useRef(false);
+  const last=useRef(null);
+  const [open,setOpen]=useState(false);
+  const [hasSig,setHasSig]=useState(!!value);
+
+  useEffect(()=>{
+    if(!open) return;
+    const cvs=canvasRef.current; if(!cvs) return;
+    const ctx=cvs.getContext("2d");
+    ctx.clearRect(0,0,cvs.width,cvs.height);
+    if(value){const img=new Image();img.onload=()=>ctx.drawImage(img,0,0);img.src=value;}
+  },[open]);
+
+  function getPos(e,cvs){
+    const r=cvs.getBoundingClientRect();
+    const src=e.touches?e.touches[0]:e;
+    return {x:(src.clientX-r.left)*(cvs.width/r.width),y:(src.clientY-r.top)*(cvs.height/r.height)};
+  }
+  function onStart(e){e.preventDefault();drawing.current=true;last.current=getPos(e,canvasRef.current);}
+  function onMove(e){
+    e.preventDefault();if(!drawing.current)return;
+    const cvs=canvasRef.current;const ctx=cvs.getContext("2d");const pos=getPos(e,cvs);
+    ctx.beginPath();ctx.moveTo(last.current.x,last.current.y);ctx.lineTo(pos.x,pos.y);
+    ctx.strokeStyle="#1a1a2e";ctx.lineWidth=2.5;ctx.lineCap="round";ctx.lineJoin="round";ctx.stroke();
+    last.current=pos;
+  }
+  function onEnd(e){e.preventDefault();drawing.current=false;}
+  function clear(){canvasRef.current.getContext("2d").clearRect(0,0,canvasRef.current.width,canvasRef.current.height);}
+  function save(){
+    const cvs=canvasRef.current;const data=cvs.toDataURL("image/png");
+    const blank=document.createElement("canvas");blank.width=cvs.width;blank.height=cvs.height;
+    const isEmpty=data===blank.toDataURL("image/png");
+    onChange(isEmpty?null:data);setHasSig(!isEmpty);setOpen(false);
+  }
+  function remove(){onChange(null);setHasSig(false);}
+
+  return (
+    React.createElement(React.Fragment, null
+      , React.createElement('div', { className: "sig-trigger-wrap",}
+        , hasSig&&value
+          ? React.createElement('div', { className: "sig-preview-wrap",}
+              , React.createElement('img', { src: value, className: "sig-preview-img", alt: "ลายเซ็น",})
+              , React.createElement('div', { className: "sig-preview-actions no-print" ,}
+                , React.createElement('button', { className: "sig-edit-btn", onClick: ()=>setOpen(true),}, "แก้ไข")
+                , React.createElement('button', { className: "sig-edit-btn sig-del-btn" , onClick: remove,}, "ลบ")
+              )
+            )
+          : React.createElement('button', { className: "sig-open-btn no-print" , onClick: ()=>setOpen(true),}, "✍️ เซ็นลายเซ็น" )
+        
+        , React.createElement('div', { className: "sig-label-below",}, label)
+      )
+
+      , open&&(
+        React.createElement('div', { className: "sig-overlay", onClick: e=>e.target===e.currentTarget&&setOpen(false),}
+          , React.createElement('div', { className: "sig-modal",}
+            , React.createElement('div', { className: "sig-modal-head",}
+              , React.createElement('span', { style: {fontWeight:800,fontSize:16},}, "✍️ เซ็นลายเซ็น" )
+              , React.createElement('button', { className: "sig-close-btn", onClick: ()=>setOpen(false),}, React.createElement(IcX, { s: 20,}))
+            )
+            , React.createElement('p', { className: "sig-hint",}, "วาดลายเซ็นในกรอบด้านล่าง")
+            , React.createElement('canvas', { ref: canvasRef, width: 500, height: 200, className: "sig-canvas",
+              onMouseDown: onStart, onMouseMove: onMove, onMouseUp: onEnd, onMouseLeave: onEnd,
+              onTouchStart: onStart, onTouchMove: onMove, onTouchEnd: onEnd,})
+            , React.createElement('div', { className: "sig-modal-foot",}
+              , React.createElement('button', { className: "sig-clear-btn", onClick: clear,}, "ล้าง")
+              , React.createElement('button', { className: "sig-save-btn", onClick: save,}, "บันทึกลายเซ็น")
+            )
+          )
+        )
+      )
+    )
+  );
+}
+
+/* ═══ QUOTE EDITOR ═══ */
+function QuoteEditor({quote,upQ,updItem,addItem,delItem,addNote,updNote,delNote,addEq,updEq,delEq,delEqTable,updQH,updEH,qCols,eqCols,qTotal,eqTotal,co,onNew}){
+  const hasEq=(quote.eqItems||[]).length>0;
+  const grand=qTotal+eqTotal;
+  const split=!!quote.splitMode;
+  const totLabor=laborTotal(quote.items);
+  const totMaterial=materialTotal(quote.items);
+  return (
+    React.createElement('div', { className: "doc-wrap",}
+      , React.createElement('div', { className: "doc-topbar no-print" ,}
+        , React.createElement('button', { className: "sm-btn", onClick: onNew,}, React.createElement(IcPlus, { s: 15,}), " ใหม่" )
+        , React.createElement('button', {
+          className: `sm-btn ${split?"sm-btn-active":""}`,
+          onClick: ()=>upQ({splitMode:!split}),
+          title: "แยกคอลัมน์ค่าแรง/ค่าอุปกรณ์",}
+
+          , split?"🔀 แยกค่าแรง/อุปกรณ์":"➕ แยกค่าแรง/อุปกรณ์"
+        )
+      )
+      , React.createElement('div', { className: "doc-card",}
+        , React.createElement('div', { className: "doc-header",}, co.title)
+        , React.createElement('div', { className: "doc-meta",}
+          , React.createElement('div', { className: "field-group",}, React.createElement('label', { className: "field-label",}, "ชื่อลูกค้า"), React.createElement('input', { className: "field-input", placeholder: "ชื่อลูกค้า / ชื่อร้าน"  , value: quote.customerName, onChange: e=>upQ({customerName:e.target.value}),}))
+          , React.createElement('div', { className: "field-group",}, React.createElement('label', { className: "field-label",}, "วันที่"), React.createElement('input', { className: "field-input", value: quote.dateText, onChange: e=>upQ({dateText:e.target.value}),}))
+          , React.createElement('div', { className: "field-note no-print" ,}, "เลขที่ " , quote.docNo)
+        )
+        , React.createElement('div', { className: "tbl-section-title",}, "รายการค่าแรงและงาน")
+        , React.createElement('div', { className: "tbl-scroll",}
+          , React.createElement('table', { className: "tbl",}
+            , React.createElement('thead', null
+              , split ? (
+                React.createElement(React.Fragment, null
+                  , React.createElement('tr', null
+                    , React.createElement('th', { rowSpan: 2, style: {width:36},}, "#")
+                    , React.createElement('th', { rowSpan: 2,}, React.createElement('input', { className: "th-input", value: qCols[0], onChange: e=>updQH(0,e.target.value),}))
+                    , React.createElement('th', { rowSpan: 2, style: {width:52},}, React.createElement('input', { className: "th-input center" , value: qCols[1], onChange: e=>updQH(1,e.target.value),}))
+                    , React.createElement('th', { colSpan: 2, style: {textAlign:"center",background:"#e8f4e8",color:"#2a6e2a",fontSize:11},}, "ค่าอุปกรณ์")
+                    , React.createElement('th', { colSpan: 2, style: {textAlign:"center",background:"#e8eef8",color:"#1e3a8a",fontSize:11},}, "ราคาค่าแรง")
+                    , React.createElement('th', { rowSpan: 2, style: {width:90},}, React.createElement('input', { className: "th-input right" , style: {color:"var(--ad)"}, value: qCols[4], onChange: e=>updQH(4,e.target.value),}))
+                    , React.createElement('th', { className: "no-print", rowSpan: 2, style: {width:32},})
+                  )
+                  , React.createElement('tr', null
+                    , React.createElement('th', { style: {width:80,background:"#f0faf0",color:"#2a6e2a",fontSize:11},}, "ราคา/หน่วย")
+                    , React.createElement('th', { style: {width:80,background:"#f0faf0",color:"#2a6e2a",fontSize:11},}, "รวม")
+                    , React.createElement('th', { style: {width:80,background:"#eff3fd",color:"#1e3a8a",fontSize:11},}, "ราคา/หน่วย")
+                    , React.createElement('th', { style: {width:80,background:"#eff3fd",color:"#1e3a8a",fontSize:11},}, "รวม")
+                  )
+                )
+              ) : (
+                React.createElement('tr', null
+                  , React.createElement('th', { style: {width:36},}, "#")
+                  , React.createElement('th', null, React.createElement('input', { className: "th-input", value: qCols[0], onChange: e=>updQH(0,e.target.value),}))
+                  , React.createElement('th', { style: {width:60},}, React.createElement('input', { className: "th-input center" , value: qCols[1], onChange: e=>updQH(1,e.target.value),}))
+                  , React.createElement('th', { style: {width:90},}, React.createElement('input', { className: "th-input right" , value: qCols[2], onChange: e=>updQH(2,e.target.value),}))
+                  , React.createElement('th', { style: {width:100},}, React.createElement('input', { className: "th-input right" , value: qCols[3], onChange: e=>updQH(3,e.target.value),}))
+                  , React.createElement('th', { className: "no-print", style: {width:36},})
+                )
+              )
+            )
+            , React.createElement('tbody', null
+              , quote.items.map((it,i)=>(
+                React.createElement('tr', { key: it.id,}
+                  , React.createElement('td', { className: "center",}, i+1)
+                  , React.createElement('td', null, React.createElement('input', { className: "cell-input", placeholder: "รายการ", value: it.name, onChange: e=>updItem(it.id,{name:e.target.value}),}))
+                  , React.createElement('td', null, React.createElement('input', { type: "number", className: "cell-input center" , value: it.qty, onChange: e=>updItem(it.id,{qty:e.target.value}),}))
+                  , split ? (
+                    it.merged ? (
+                      // ผสานเซล: colspan 4 ช่อง แสดง input รวมราคาก้อนเดียว
+                      React.createElement(React.Fragment, null
+                        , React.createElement('td', { colSpan: 4, style: {background:"#fffbf0",padding:"4px 6px"},}
+                          , React.createElement('div', { style: {display:"flex",alignItems:"center",gap:6},}
+                            , React.createElement('span', { style: {fontSize:10,color:"#b08030",whiteSpace:"nowrap"},}, "รวม")
+                            , React.createElement('input', { type: "number", className: "cell-input right" , style: {color:"#b06000",fontWeight:700}, placeholder: "0",
+                              value: it.price||"",
+                              onChange: e=>updItem(it.id,{price:e.target.value}),})
+                          )
+                        )
+                        , React.createElement('td', { className: "right bold" , style: {background:"#fffbf0",color:"#b06000"},}
+                          , THB((Number(it.qty)||1)*(Number(it.price)||0))
+                        )
+                      )
+                    ) : (
+                      React.createElement(React.Fragment, null
+                        , React.createElement('td', { style: {background:"#f8fdf8"},}, React.createElement('input', { type: "number", className: "cell-input right" , style: {color:"#2a6e2a"}, placeholder: "0", value: it.material||"", onChange: e=>updItem(it.id,{material:e.target.value}),}))
+                        , React.createElement('td', { className: "right bold" , style: {background:"#f8fdf8",color:"#2a6e2a",fontSize:12},}, (Number(it.material)||0)>0?THB((Number(it.qty)||1)*(Number(it.material)||0)):"")
+                        , React.createElement('td', { style: {background:"#f5f8ff"},}, React.createElement('input', { type: "number", className: "cell-input right" , style: {color:"#1e3a8a"}, placeholder: "0", value: it.labor||"", onChange: e=>updItem(it.id,{labor:e.target.value}),}))
+                        , React.createElement('td', { className: "right bold" , style: {background:"#f5f8ff",color:"#1e3a8a",fontSize:12},}, (Number(it.labor)||0)>0?THB((Number(it.qty)||1)*(Number(it.labor)||0)):"")
+                        , React.createElement('td', { className: "right bold" ,}, THB((Number(it.qty)||1)*((Number(it.material)||0)+(Number(it.labor)||0))))
+                      )
+                    )
+                  ) : (
+                    React.createElement(React.Fragment, null
+                      , React.createElement('td', null, React.createElement('input', { type: "number", className: "cell-input right" , value: it.price, onChange: e=>updItem(it.id,{price:e.target.value}),}))
+                      , React.createElement('td', { className: "right bold" ,}, THB((Number(it.qty)||0)*(Number(it.price)||0)))
+                    )
+                  )
+                  , React.createElement('td', { className: "no-print center" , style: {verticalAlign:"middle"},}
+                    , React.createElement('div', { style: {display:"flex",flexDirection:"column",gap:3,alignItems:"center"},}
+                      , split && (
+                        React.createElement('button', {
+                          className: `merge-btn ${it.merged?"merge-btn-on":""}`,
+                          onClick: ()=>updItem(it.id,{merged:!it.merged}),
+                          title: it.merged?"แยกช่องค่าแรง/อุปกรณ์":"ผสานเซล (รวมราคาก้อนเดียว)",}
+, "⊞")
+                      )
+                      , React.createElement('button', { className: "icon-btn", onClick: ()=>delItem(it.id),}, React.createElement(IcTrash, { s: 14,}))
+                    )
+                  )
+                )
+              ))
+            )
+            , React.createElement('tfoot', null
+              , split ? (
+                hasEq ? (
+                  React.createElement(React.Fragment, null
+                    , React.createElement('tr', { className: "sub-row",}
+                      , React.createElement('td', { colSpan: 3, className: "right",}, "รวมค่าอุปกรณ์")
+                      , React.createElement('td', { colSpan: 2, className: "right", style: {color:"#2a6e2a"},}, THB(totMaterial))
+                      , React.createElement('td', { colSpan: 2, className: "right", style: {color:"#1e3a8a"},}, "รวมค่าแรง " , THB(totLabor))
+                      , React.createElement('td', { className: "right",}, THB(qTotal))
+                      , React.createElement('td', { className: "no-print",})
+                    )
+                  )
+                ) : (
+                  React.createElement('tr', { className: "total-row",}
+                    , React.createElement('td', { colSpan: 3,}, "รวมทั้งสิ้น")
+                    , React.createElement('td', { colSpan: 2, style: {textAlign:"right",background:"#4a8a4a"},}, "อุปกรณ์ " , THB(totMaterial))
+                    , React.createElement('td', { colSpan: 2, style: {textAlign:"right",background:"#3a5a9a"},}, "แรง " , THB(totLabor))
+                    , React.createElement('td', { className: "right",}, THB(qTotal))
+                    , React.createElement('td', { className: "no-print",})
+                  )
+                )
+              ) : (
+                hasEq
+                  ? React.createElement('tr', { className: "sub-row",}, React.createElement('td', { colSpan: 4, className: "right",}, "รวมค่าแรง"), React.createElement('td', { className: "right",}, THB(qTotal)), React.createElement('td', { className: "no-print",}))
+                  : React.createElement('tr', { className: "total-row",}, React.createElement('td', { colSpan: 4,}, "รวมทั้งสิ้น"), React.createElement('td', { className: "right",}, THB(qTotal)), React.createElement('td', { className: "no-print",}))
+              )
+            )
+          )
+        )
+        , React.createElement('button', { className: "add-row-btn no-print" , onClick: addItem,}, React.createElement(IcPlus, { s: 14,}), " เพิ่มรายการ" )
+        , !hasEq?(
+          React.createElement('button', { className: "eq-add-btn no-print" , onClick: addEq,}, React.createElement(IcPlus, { s: 15,}), " เพิ่มตารางอุปกรณ์" )
+        ):(
+          React.createElement('div', { className: "eq-section",}
+            , React.createElement('div', { className: "eq-header",}, React.createElement('span', null, "🔧 รายการอุปกรณ์และวัสดุ" ), React.createElement('button', { className: "icon-btn danger no-print"  , onClick: delEqTable,}, React.createElement(IcX, { s: 14,})))
+            , React.createElement('div', { className: "tbl-scroll",}
+              , React.createElement('table', { className: "tbl",}
+                , React.createElement('thead', null, React.createElement('tr', null
+                  , React.createElement('th', { style: {width:36},}, "#")
+                  , React.createElement('th', null, React.createElement('input', { className: "th-input", value: eqCols[0], onChange: e=>updEH(0,e.target.value),}))
+                  , React.createElement('th', { style: {width:60},}, React.createElement('input', { className: "th-input center" , value: eqCols[1], onChange: e=>updEH(1,e.target.value),}))
+                  , React.createElement('th', { style: {width:60},}, React.createElement('input', { className: "th-input center" , value: eqCols[2], onChange: e=>updEH(2,e.target.value),}))
+                  , React.createElement('th', { style: {width:90},}, React.createElement('input', { className: "th-input right" , value: eqCols[3], onChange: e=>updEH(3,e.target.value),}))
+                  , React.createElement('th', { style: {width:100},}, React.createElement('input', { className: "th-input right" , value: eqCols[4], onChange: e=>updEH(4,e.target.value),}))
+                  , React.createElement('th', { className: "no-print", style: {width:36},})
+                ))
+                , React.createElement('tbody', null
+                  , (quote.eqItems||[]).map((it,i)=>(
+                    React.createElement('tr', { key: it.id,}
+                      , React.createElement('td', { className: "center",}, i+1)
+                      , React.createElement('td', null, React.createElement('input', { className: "cell-input", placeholder: "ชื่ออุปกรณ์", value: it.name, onChange: e=>updEq(it.id,{name:e.target.value}),}))
+                      , React.createElement('td', null, React.createElement('input', { type: "number", className: "cell-input center" , value: it.qty, onChange: e=>updEq(it.id,{qty:e.target.value}),}))
+                      , React.createElement('td', null
+                        , React.createElement('input', { list: `eu-${it.id}`, className: "cell-input center" , value: it.unit, onChange: e=>updEq(it.id,{unit:e.target.value}),})
+                        , React.createElement('datalist', { id: `eu-${it.id}`,}, ["ชิ้น","อัน","เมตร","กล่อง","ม้วน","แผ่น","ชุด","กก.","ล.","ถุง"].map(u=>React.createElement('option', { key: u, value: u,})))
+                      )
+                      , React.createElement('td', null, React.createElement('input', { type: "number", className: "cell-input right" , value: it.price, onChange: e=>updEq(it.id,{price:e.target.value}),}))
+                      , React.createElement('td', { className: "right bold" ,}, THB((Number(it.qty)||0)*(Number(it.price)||0)))
+                      , React.createElement('td', { className: "no-print center" ,}, React.createElement('button', { className: "icon-btn", onClick: ()=>delEq(it.id),}, React.createElement(IcTrash, { s: 14,})))
+                    )
+                  ))
+                )
+                , React.createElement('tfoot', null
+                  , React.createElement('tr', { className: "sub-row",}, React.createElement('td', { colSpan: 5, className: "right",}, "รวมค่าอุปกรณ์"), React.createElement('td', { className: "right",}, THB(eqTotal)), React.createElement('td', { className: "no-print",}))
+                  , React.createElement('tr', { className: "total-row",}, React.createElement('td', { colSpan: 5,}, "รวมทั้งสิ้น"), React.createElement('td', { className: "right",}, THB(grand)), React.createElement('td', { className: "no-print",}))
+                )
+              )
+            )
+            , React.createElement('button', { className: "add-row-btn no-print" , onClick: addEq,}, React.createElement(IcPlus, { s: 14,}), " เพิ่มอุปกรณ์" )
+          )
+        )
+        , React.createElement('div', { className: "notes-section",}
+          , React.createElement('div', { className: "notes-title",}, "หมายเหตุ ***" )
+          , quote.notes.map((n,i)=>(
+            React.createElement('div', { className: "note-row", key: i,}
+              , React.createElement('span', null, "✅")
+              , React.createElement('input', { className: "field-input", placeholder: "เงื่อนไข / รับประกัน"  , value: n, onChange: e=>updNote(i,e.target.value),})
+              , React.createElement('button', { className: "icon-btn no-print" , onClick: ()=>delNote(i),}, React.createElement(IcX, { s: 13,}))
+            )
+          ))
+          , React.createElement('button', { className: "add-row-btn no-print" , onClick: addNote,}, React.createElement(IcPlus, { s: 14,}), " เพิ่มหมายเหตุ" )
+        )
+        , React.createElement('div', { className: "pay-header",}, "การชำระเงินและเงื่อนไข")
+        , React.createElement('div', { className: "pay-body",}, React.createElement('div', null, co.payeeName), React.createElement('div', null, co.bankName), React.createElement('div', null, "เลขที่บัญชี " , co.accountNo), React.createElement('div', { className: "pay-strong",}, co.paymentTerms))
+        , React.createElement('div', { className: "sig-section",}
+          , React.createElement(SignaturePad, { value: quote.signature, onChange: v=>upQ({signature:v}), label: "ลายเซ็นผู้เสนอราคา",})
+        )
+      )
+    )
+  );
+}
+
+/* ═══ RECEIPT EDITOR ═══ */
+function ReceiptEditor({rcpt,upR,updRI,addRI,delRI,rTotal,co,onNew}){
+  const PAY=["โอนเงิน","เงินสด","เช็ค","QR Code"];
+  return (
+    React.createElement('div', { className: "doc-wrap",}
+      , React.createElement('div', { className: "doc-topbar no-print" ,}, React.createElement('button', { className: "sm-btn", onClick: onNew,}, React.createElement(IcPlus, { s: 15,}), " ใหม่" ))
+      , React.createElement('div', { className: "doc-card",}
+        , React.createElement('div', { className: "rc-header-blk",}
+          , React.createElement('div', { className: "rc-brand",}, React.createElement('div', { className: "rc-mark",}, "ช"), React.createElement('div', null, React.createElement('div', { className: "rc-name",}, "ช่างเม่น Service" ), React.createElement('div', { className: "rc-sub",}, co.payeeName)))
+          , React.createElement('div', { className: "rc-title-blk",}, React.createElement('div', { className: "rc-th",}, "ใบเสร็จรับเงิน"), React.createElement('div', { className: "rc-en",}, "RECEIPT"))
+        )
+        , React.createElement('div', { className: "doc-meta",}
+          , React.createElement('div', { className: "field-group",}, React.createElement('label', { className: "field-label",}, "ลูกค้า"), React.createElement('input', { className: "field-input", placeholder: "ชื่อลูกค้า", value: rcpt.customerName, onChange: e=>upR({customerName:e.target.value}),}))
+          , React.createElement('div', { className: "doc-meta-row2",}
+            , React.createElement('div', { className: "field-group", style: {flex:1},}
+              , React.createElement('label', { className: "field-label",}, "วิธีชำระ")
+              , React.createElement('select', { className: "field-input no-print" , value: rcpt.payMethod, onChange: e=>upR({payMethod:e.target.value}),}, PAY.map(m=>React.createElement('option', { key: m,}, m)))
+              , React.createElement('div', { className: "rc-print-only",}, rcpt.payMethod)
+            )
+            , React.createElement('div', { className: "field-group", style: {flex:1},}, React.createElement('label', { className: "field-label",}, "วันที่"), React.createElement('input', { className: "field-input", value: rcpt.dateText, onChange: e=>upR({dateText:e.target.value}),}))
+          )
+          , React.createElement('div', { className: "field-note no-print" ,}, "เลขที่ " , rcpt.docNo)
+        )
+        , React.createElement('div', { className: "tbl-scroll",}
+          , React.createElement('table', { className: "tbl",}
+            , React.createElement('thead', null, React.createElement('tr', null
+              , React.createElement('th', { style: {width:36},}, "#"), React.createElement('th', null, "รายการ")
+              , React.createElement('th', { style: {width:60},}, "จำนวน"), React.createElement('th', { style: {width:90},}, "ราคา/หน่วย")
+              , React.createElement('th', { style: {width:100},}, "จำนวนเงิน")
+              , React.createElement('th', { className: "no-print", style: {width:36},})
+            ))
+            , React.createElement('tbody', null
+              , rcpt.items.map((it,i)=>(
+                React.createElement('tr', { key: it.id,}
+                  , React.createElement('td', { className: "center",}, i+1)
+                  , React.createElement('td', null, React.createElement('input', { className: "cell-input", placeholder: "รายการ", value: it.name, onChange: e=>updRI(it.id,{name:e.target.value}),}))
+                  , React.createElement('td', null, React.createElement('input', { type: "number", className: "cell-input center" , value: it.qty, onChange: e=>updRI(it.id,{qty:e.target.value}),}))
+                  , React.createElement('td', null, React.createElement('input', { type: "number", className: "cell-input right" , value: it.price, onChange: e=>updRI(it.id,{price:e.target.value}),}))
+                  , React.createElement('td', { className: "right bold" ,}, THB((Number(it.qty)||0)*(Number(it.price)||0)))
+                  , React.createElement('td', { className: "no-print center" ,}, React.createElement('button', { className: "icon-btn", onClick: ()=>delRI(it.id),}, React.createElement(IcTrash, { s: 14,})))
+                )
+              ))
+            )
+            , React.createElement('tfoot', null
+              , React.createElement('tr', { className: "sub-row",}, React.createElement('td', { colSpan: 4, className: "right",}, "รวมเงิน"), React.createElement('td', { className: "right",}, THB(rTotal)), React.createElement('td', { className: "no-print",}))
+              , React.createElement('tr', { className: "total-row",}, React.createElement('td', { colSpan: 4,}, "ยอดชำระทั้งสิ้น"), React.createElement('td', { className: "right",}, THB(rTotal), " ฿" ), React.createElement('td', { className: "no-print",}))
+            )
+          )
+        )
+        , React.createElement('button', { className: "add-row-btn no-print" , onClick: addRI,}, React.createElement(IcPlus, { s: 14,}), " เพิ่มรายการ" )
+        , React.createElement('div', { className: "rc-footer-blk",}
+          , React.createElement('div', null, React.createElement('div', { className: "field-label", style: {marginBottom:4},}, "ช่องทางโอนเงิน"), React.createElement('div', { style: {color:"#1d4ed8",fontWeight:700},}, co.bankName), React.createElement('div', { style: {color:"#1d4ed8",fontWeight:900,fontSize:16},}, co.accountNo), React.createElement('div', { style: {color:"#1d4ed8",fontWeight:600},}, co.payeeName))
+          , React.createElement('div', { className: "rc-sign",}
+            , rcpt.signature
+              ? React.createElement('img', { src: rcpt.signature, style: {height:50,maxWidth:150,display:"block",margin:"0 auto 4px"}, alt: "ลายเซ็น",})
+              : React.createElement('div', { style: {letterSpacing:3,color:"#aaa"},}, ".........................")
+            
+            , React.createElement('div', { style: {fontSize:11.5,color:"#999",marginTop:3},}, "ผู้รับเงิน")
+            , React.createElement('div', { style: {fontWeight:700,fontSize:13},}, co.payeeName)
+            , React.createElement(SignaturePad, { value: rcpt.signature, onChange: v=>upR({signature:v}), label: "",})
+          )
+        )
+        , React.createElement('div', { className: "rc-thanks",}, "ขอบคุณที่ใช้บริการ ช่างเม่น Service 🦔"   )
+      )
+    )
+  );
+}
+
+/* ═══ WARRANTY EDITOR ═══ */
+function WarrantyEditor({war,setWar,onNew}){
+  const upW=p=>setWar(w=>({...w,...p}));
+  return (
+    React.createElement('div', { className: "doc-wrap",}
+      , React.createElement('div', { className: "doc-topbar no-print" ,}, React.createElement('button', { className: "sm-btn", onClick: onNew,}, React.createElement(IcPlus, { s: 15,}), " ใหม่" ))
+      , React.createElement('div', { className: "war-fields no-print" ,}
+        , React.createElement('div', { className: "field-grid",}
+          , React.createElement('div', { className: "field-group",}, React.createElement('label', { className: "field-label",}, "วันที่ติดตั้ง"), React.createElement('input', { className: "field-input", value: war.installDate, onChange: e=>upW({installDate:e.target.value}),}))
+          , React.createElement('div', { className: "field-group",}, React.createElement('label', { className: "field-label",}, "ชื่อลูกค้า"), React.createElement('input', { className: "field-input", placeholder: "ชื่อลูกค้า / ร้าน"  , value: war.customerName, onChange: e=>upW({customerName:e.target.value}),}))
+          , React.createElement('div', { className: "field-group",}, React.createElement('label', { className: "field-label",}, "สถานที่"), React.createElement('input', { className: "field-input", placeholder: "ที่อยู่ / สถานที่"  , value: war.location, onChange: e=>upW({location:e.target.value}),}))
+          , React.createElement('div', { className: "field-group",}, React.createElement('label', { className: "field-label",}, "รายละเอียดงาน"), React.createElement('input', { className: "field-input", placeholder: "เช่น เปลี่ยนเฟสเซอร์สวิต" , value: war.jobDetail, onChange: e=>upW({jobDetail:e.target.value}),}))
+          , React.createElement('div', { className: "field-group",}, React.createElement('label', { className: "field-label",}, "ระยะรับประกัน (เดือน)" ), React.createElement('input', { type: "number", min: 1, max: 60, className: "field-input", value: war.warrantyMonths, onChange: e=>upW({warrantyMonths:e.target.value}),}))
+          , React.createElement('div', { className: "field-group",}, React.createElement('label', { className: "field-label",}, "ชื่อช่างผู้ติดตั้ง"), React.createElement('input', { className: "field-input", placeholder: "ชื่อช่าง", value: war.technicianName, onChange: e=>upW({technicianName:e.target.value}),}))
+        )
+      )
+      , React.createElement('div', { className: "wc-card",}
+        , React.createElement('div', { className: "wc-head",}
+          , React.createElement('div', { className: "wc-brand-blk",}, React.createElement('div', { className: "wc-thai",}, "ช่างเม่น"), React.createElement('div', { className: "wc-en",}, "Service"))
+          , React.createElement('div', { style: {width:2,background:"#333",alignSelf:"stretch"},})
+          , React.createElement('div', { className: "wc-title-blk",}, React.createElement('div', { className: "wc-doc",}, "ใบรับประกัน"), React.createElement('div', { className: "wc-job",}, war.jobDetail||"รายละเอียดงาน"))
+          , React.createElement('div', { className: "wc-deco",})
+        )
+        , React.createElement('div', { className: "wc-body",}
+          , React.createElement('div', { className: "wc-info",}
+            , React.createElement('div', { className: "wc-row",}, React.createElement('span', null, "📅"), React.createElement('span', { className: "wc-lbl",}, "วันที่ติดตั้ง"), React.createElement('span', { className: "wc-val",}, war.installDate||"—"))
+            , React.createElement('div', { className: "wc-row",}, React.createElement('span', null, "👤"), React.createElement('span', { className: "wc-lbl",}, "ลูกค้า"), React.createElement('span', { className: "wc-val",}, war.customerName||"—"))
+            , React.createElement('div', { className: "wc-row",}, React.createElement('span', null, "📍"), React.createElement('span', { className: "wc-lbl",}, "สถานที่"), React.createElement('span', { className: "wc-val",}, war.location||"—"))
+            , React.createElement('div', { className: "wc-row",}, React.createElement('span', null, "⚙️"), React.createElement('span', { className: "wc-lbl",}, "รายละเอียด"), React.createElement('span', { className: "wc-val", style: {color:"#c4671f"},}, war.jobDetail||"—"))
+          )
+          , React.createElement('div', { className: "wc-badge-wrap",}
+            , React.createElement('div', { className: "wc-badge",}, React.createElement('div', { className: "wc-stars",}, "★★★"), React.createElement('div', { className: "wc-b-lbl",}, "รับประกันงาน"), React.createElement('div', { className: "wc-b-num",}, war.warrantyMonths||1), React.createElement('div', { className: "wc-b-unit",}, "เดือน"))
+            , React.createElement('div', { className: "wc-note",}, "รับประกัน " , war.warrantyMonths||1, " เดือน" )
+          )
+        )
+        , React.createElement('div', { className: "wc-foot",}
+          , React.createElement('div', { style: {display:"flex",alignItems:"center",gap:8},}, React.createElement('span', { style: {fontSize:20},}, "🛡️"), React.createElement('div', null, React.createElement('div', { style: {color:"#fff",fontWeight:700,fontSize:13},}, "รับประกันเฉพาะงานติดตั้ง"), React.createElement('div', { style: {color:"#aaa",fontSize:11},}, "ไม่รวมอุปกรณ์เสียหายจากภายนอก")))
+          , React.createElement('div', { style: {display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4},}
+            , war.signature&&React.createElement('img', { src: war.signature, style: {height:40,maxWidth:120,filter:"invert(1) brightness(2)"}, alt: "ลายเซ็น",})
+            , React.createElement('div', { style: {color:"#aaa",fontSize:12,whiteSpace:"nowrap"},}, "ลงชื่อ " , React.createElement('span', { style: {color:"#d97b29"},}, war.technicianName||"........................"))
+            , React.createElement(SignaturePad, { value: war.signature, onChange: v=>setWar(w=>({...w,signature:v})), label: "",})
+          )
+        )
+      )
+    )
+  );
+}
+
+/* ═══ SETTINGS ═══ */
+function SettingsView({co,setCo,onBack,onExport,importRef}){
+  return (
+    React.createElement('div', { className: "settings-root",}
+      , React.createElement('div', { className: "settings-back",}, React.createElement('button', { className: "sm-btn", onClick: onBack,}, React.createElement(IcLeft, { s: 16,}), " กลับ" ), React.createElement('span', { style: {fontWeight:700,fontSize:16},}, "ตั้งค่า"))
+      , React.createElement('div', { className: "settings-section-title",}, "ข้อมูลบริษัท")
+      , React.createElement('div', { className: "settings-form",}
+        , [["หัวเอกสาร","title"],["ชื่อผู้รับเงิน","payeeName"],["ธนาคาร","bankName"],["เลขที่บัญชี","accountNo"],["เงื่อนไขการชำระเงิน","paymentTerms"]].map(([l,k])=>(
+          React.createElement('div', { className: "field-group", key: k,}, React.createElement('label', { className: "field-label",}, l), React.createElement('input', { className: "field-input", value: co[k], onChange: e=>setCo({...co,[k]:e.target.value}),}))
+        ))
+      )
+      , React.createElement('div', { className: "settings-section-title",}, "สำรองข้อมูล")
+      , React.createElement('div', { className: "settings-form",}
+        , React.createElement('button', { className: "backup-btn", onClick: onExport,}, React.createElement(IcDownload, { s: 18,}), " Export — ดาวน์โหลดข้อมูลสำรอง"   )
+        , React.createElement('button', { className: "backup-btn", style: {background:"#eff6ff",color:"#1d4ed8",borderColor:"#bfdbfe"}, onClick: ()=>importRef.current.click(),}, React.createElement(IcUpload, { s: 18,}), " Import — นำเข้าข้อมูลจากไฟล์"   )
+        , React.createElement('p', { className: "settings-hint",}, "ข้อมูลถูกบันทึกใน localStorage ของเบราว์เซอร์นี้"  , React.createElement('br', null), "กด Export เพื่อบันทึกสำรองไว้ก่อนเคลียร์แคช"  )
+      )
+    )
+  );
+}
+
+/* ═══ CSS ═══ */
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App, null));
+
+
+})();
+</script>
+</body>
+</html>
